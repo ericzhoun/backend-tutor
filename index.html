@@ -224,10 +224,14 @@
       <div class="grp">Part V — Practice</div>
       <a href="#m08"><span class="no">M08</span>Case Study Lab</a>
       <a href="#m09"><span class="no">M09</span>Design Workshop &amp; Capstone</a>
+      <div class="grp">Part VI — The Field Manual</div>
+      <a href="#m10"><span class="no">M10</span>Production Operations</a>
+      <a href="#m11"><span class="no">M11</span>The Senior Track</a>
       <div class="grp">Reference</div>
       <a href="#catalog">4 · Case catalog — 35 architectures</a>
       <a href="#schedule">5 · 12-week schedule</a>
       <a href="#libraries">6 · Core reading libraries</a>
+      <a href="#fieldlib">7 · Field document library</a>
       <a href="#appendix">A · Source links</a>
     </nav>
   </aside>
@@ -237,15 +241,15 @@
 
       <!-- ================= COVER ================= -->
       <header class="cover">
-        <p class="kicker">Self-study syllabus · Twelve weeks</p>
+        <p class="kicker">Self-study syllabus · Fifteen weeks</p>
         <h1>Backend System Design</h1>
-        <p class="lede">From cost math to production proof: a complete route through the 23 canonical system-design concepts, grounded in 35 real architectures from Discord, Stripe, Cloudflare, Uber, and 31 other engineering teams.</p>
+        <p class="lede">From cost math to field judgment: the 23 canonical system-design concepts, 35 real architectures, and a field manual of incident command, code review, and the senior decision track — distilled from a 17-volume field document library.</p>
         <div class="meta-row">
-          <span><b>5</b> parts</span>
-          <span><b>9</b> modules</span>
+          <span><b>6</b> parts</span>
+          <span><b>11</b> modules</span>
           <span><b>23</b> concepts</span>
           <span><b>35</b> case studies</span>
-          <span><b>10</b> source libraries</span>
+          <span><b>17</b> field documents</span>
           <span><b>~9 h</b> / week</span>
         </div>
       </header>
@@ -268,6 +272,7 @@
         </table>
         <div class="prose" style="margin-top:22px">
           <p>Two standing rules. Case studies come <em>after</em> concepts, never before — they are the exam, not the lecture. And every module ends by answering the same question in writing: <em>what breaks at 100× scale?</em></p>
+          <p>From Week 13 the rhythm is unchanged, but the material switches from textbooks to the <strong>field document library</strong> (section 07): labs become drills, reviews, and written records — the same skills, tested where they were learned.</p>
         </div>
       </section>
 
@@ -276,60 +281,65 @@
         <div class="sec-head"><span class="sec-no">02</span><h2>Course map</h2></div>
         <hr class="sec-rule">
         <div class="prose">
-          <p>The progression is deliberate: <strong>cost math → traffic path → state → failure → interaction patterns → production proof.</strong> Each part assumes the previous one; don't skip ahead.</p>
+          <p>The progression is deliberate: <strong>cost math → traffic path → state → failure → interaction patterns → production proof → field judgment.</strong> Each part assumes the previous one; don't skip ahead.</p>
         </div>
         <figure class="route">
-          <svg viewBox="0 0 1060 148" role="img" aria-label="Course route: Foundations, Data Layer, Performance and Resilience, Architecture Patterns, Practice">
+          <svg viewBox="0 0 1180 148" role="img" aria-label="Course route: Foundations, Data Layer, Performance and Resilience, Architecture Patterns, Practice, Field Manual">
             <g font-family="Consolas, Menlo, monospace">
-              <!-- stage boxes -->
               <g>
-                <rect x="8" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
-                <text x="24" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART I</text>
-                <text x="24" y="76" font-size="14" fill="#191c1e">Foundations</text>
-                <text x="24" y="92" font-size="10.5" fill="#62686d">cost math · request path</text>
+                <rect x="8" y="30" width="150" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="22" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART I</text>
+                <text x="22" y="76" font-size="13.5" fill="#191c1e">Foundations</text>
+                <text x="22" y="92" font-size="10" fill="#62686d">cost math · traffic</text>
               </g>
               <g>
-                <rect x="228" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
-                <text x="244" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART II</text>
-                <text x="244" y="76" font-size="14" fill="#191c1e">Data Layer</text>
-                <text x="244" y="92" font-size="10.5" fill="#62686d">storage · consistency</text>
+                <rect x="208" y="30" width="150" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="222" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART II</text>
+                <text x="222" y="76" font-size="13.5" fill="#191c1e">Data Layer</text>
+                <text x="222" y="92" font-size="10" fill="#62686d">storage · consistency</text>
               </g>
               <g>
-                <rect x="448" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
-                <text x="464" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART III</text>
-                <text x="464" y="76" font-size="14" fill="#191c1e">Perf &amp; Resilience</text>
-                <text x="464" y="92" font-size="10.5" fill="#62686d">caching · fault tolerance</text>
+                <rect x="408" y="30" width="150" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="422" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART III</text>
+                <text x="422" y="76" font-size="13.5" fill="#191c1e">Perf &amp; Resilience</text>
+                <text x="422" y="92" font-size="10" fill="#62686d">cache · fault tolerance</text>
               </g>
               <g>
-                <rect x="668" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
-                <text x="684" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART IV</text>
-                <text x="684" y="76" font-size="14" fill="#191c1e">Patterns</text>
-                <text x="684" y="92" font-size="10.5" fill="#62686d">queues · microservices</text>
+                <rect x="608" y="30" width="150" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="622" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART IV</text>
+                <text x="622" y="76" font-size="13.5" fill="#191c1e">Patterns</text>
+                <text x="622" y="92" font-size="10" fill="#62686d">queues · services</text>
               </g>
               <g>
-                <rect x="888" y="30" width="164" height="72" fill="none" stroke="#0e5a63" stroke-width="1.2"/>
-                <text x="904" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART V</text>
-                <text x="904" y="76" font-size="14" fill="#191c1e">Practice</text>
-                <text x="904" y="92" font-size="10.5" fill="#62686d">35 cases · capstone</text>
+                <rect x="808" y="30" width="150" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="822" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART V</text>
+                <text x="822" y="76" font-size="13.5" fill="#191c1e">Practice</text>
+                <text x="822" y="92" font-size="10" fill="#62686d">35 cases · capstone</text>
               </g>
-              <!-- arrows -->
+              <g>
+                <rect x="1008" y="30" width="164" height="72" fill="none" stroke="#0e5a63" stroke-width="1.2"/>
+                <text x="1022" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART VI</text>
+                <text x="1022" y="76" font-size="13.5" fill="#191c1e">Field Manual</text>
+                <text x="1022" y="92" font-size="10" fill="#62686d">incidents · judgment</text>
+              </g>
               <g stroke="#0e5a63" stroke-width="1.2" fill="none">
-                <line x1="184" y1="66" x2="220" y2="66"/><path d="M220 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
-                <line x1="404" y1="66" x2="440" y2="66"/><path d="M440 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
-                <line x1="624" y1="66" x2="660" y2="66"/><path d="M660 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
-                <line x1="844" y1="66" x2="880" y2="66"/><path d="M880 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="158" y1="66" x2="200" y2="66"/><path d="M200 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="358" y1="66" x2="400" y2="66"/><path d="M400 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="558" y1="66" x2="600" y2="66"/><path d="M600 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="758" y1="66" x2="800" y2="66"/><path d="M800 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="958" y1="66" x2="1000" y2="66"/><path d="M1000 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
               </g>
-              <!-- week labels -->
               <g font-size="10.5" fill="#62686d">
                 <text x="8" y="128">W1–2</text>
-                <text x="228" y="128">W3–5</text>
-                <text x="448" y="128">W6–7</text>
-                <text x="668" y="128">W8–9</text>
-                <text x="888" y="128">W10–12</text>
+                <text x="208" y="128">W3–5</text>
+                <text x="408" y="128">W6–7</text>
+                <text x="608" y="128">W8–9</text>
+                <text x="808" y="128">W10–12</text>
+                <text x="1008" y="128">W13–15</text>
               </g>
             </g>
           </svg>
-          <figcaption>Five parts, twelve weeks — each part assumes the previous one</figcaption>
+          <figcaption>Six parts, fifteen weeks — each part assumes the previous one</figcaption>
         </figure>
         <table>
           <thead><tr><th style="width:20%">Part</th><th style="width:24%">Module</th><th>Concepts covered</th><th style="width:9%">Weeks</th></tr></thead>
@@ -342,7 +352,9 @@
             <tr><td></td><td>M06 Resilience</td><td>Fault Tolerance · Idempotency &amp; Data Latency</td><td class="num">7</td></tr>
             <tr><td class="t-name">IV — Patterns</td><td>M07 Async Systems &amp; Coordination</td><td>Queues · Microservices · Microservices vs Monoliths · Service Discovery · Leader Election</td><td class="num">8–9</td></tr>
             <tr><td class="t-name">V — Practice</td><td>M08 Case Study Lab</td><td>35 production architectures, in 8 themes</td><td class="num">10–11</td></tr>
-            <tr><td></td><td>M09 Design Workshop &amp; Capstone</td><td>Interview framework · capstone builds · mock designs</td><td class="num">12</td></tr>
+            <tr><td></td><td>M09 Design Workshop &amp; Capstone</td><td>Interview runbook · capstone builds · mock designs</td><td class="num">12</td></tr>
+            <tr><td class="t-name">VI — The Field Manual</td><td>M10 Production Operations</td><td>Incident command · failure shapes · code review · ADRs &amp; postmortems</td><td class="num">13–14</td></tr>
+            <tr><td></td><td>M11 The Senior Track</td><td>Decision frameworks · communication · leveling &amp; offers</td><td class="num">15</td></tr>
           </tbody>
         </table>
       </section>
@@ -376,8 +388,9 @@
             </tbody>
           </table>
           <div class="mod-lines">
-            <p><span class="lbl">Drill</span>Memorize the latency ladder (L1/L2 cache → RAM → SSD → network RTT within and between datacenters) and practice powers-of-2 storage math until it's reflex.</p>
-            <p><span class="lbl">Lab</span>Estimate QPS, storage growth per day, bandwidth, and cache footprint for five products: URL shortener, news feed, group chat, video streaming, ride hailing.</p>
+            <p><span class="lbl">Drill</span>Memorize the anchor numbers: 86,400 s/day; RTT ~1 ms same-region, 50–150 ms cross-region; SSD sequential ~100 MB/s and random reads 50–100 µs; a single Postgres primary handles ~10–50K writes/s; a single Redis ~100K ops/s. Practice the capacity chain aloud: DAU → QPS → storage → bandwidth — <em>"Assuming X, and assuming Y, that puts us around Z."</em> Plan for peak, not average: single-region consumer 2.5–3×, global 1.5–2×, B2B business-hours 4–5×, flash-sale 10×+.</p>
+            <p><span class="lbl">Lab</span>Estimate QPS, storage growth per day, bandwidth, and cache footprint for five products: URL shortener, news feed, group chat, video streaming, ride hailing. Worked reference: 1B URLs/day ≈ 11.6K writes/s; at a 100:1 read ratio, ≈ 1.16M reads/s.</p>
+            <p><span class="lbl">Field reading</span><em>System Design Reality</em> (the 1K → 10M phase narrative) · <em>Interviews Vol IV</em> ch. 02 (capacity without guessing).</p>
             <p><span class="lbl">Design doc</span><em>"Estimate the infrastructure for a WhatsApp-class messenger at 50M DAU."</em></p>
           </div>
         </div>
@@ -456,6 +469,7 @@
             </tbody>
           </table>
           <div class="mod-lines">
+            <p><span class="lbl">Field note</span>Consistency is chosen <strong>per operation, not per system</strong>: strong for balance reads, inventory deduction, uniqueness; eventual for feeds, dashboards, search indexes; read-after-write as its own requirement (session pinning). And never forget: <em>eventual consistency without a saga is data corruption with a delay.</em></p>
             <p><span class="lbl">Lab</span>Implement a saga with compensations for an order + payment two-service flow; then break it with a dual write and repair it with an outbox.</p>
             <p><span class="lbl">Design doc</span><em>"Pick the consistency model for a shopping cart, a bank ledger, and a social feed. Defend each choice."</em></p>
           </div>
@@ -485,6 +499,7 @@
             </tbody>
           </table>
           <div class="mod-lines">
+            <p><span class="lbl">Field note</span>Cache only when read:write &gt; 10:1, staleness is acceptable, the computation is expensive, and projected hit rate &gt; 50% — <em>"cache per-user = cache with no hits = just a slow write."</em> The four-layer stack compounds until ~99% of reads never touch disk, and <strong>cache hit ratio is the SLO at scale</strong>. A cache the system cannot survive without is not a cache — it is a tier of your architecture: defend the stampede path with single-flight, TTL jitter, and stale-while-revalidate.</p>
             <p><span class="lbl">Lab</span>Add cache-aside to a real API, measure hit/miss ratios, then deliberately trigger a stampede and fix it with request coalescing or locks.</p>
             <p><span class="lbl">Design doc</span><em>"Design the full cache stack for a product-detail page over 10M SKUs."</em></p>
           </div>
@@ -507,6 +522,7 @@
             </tbody>
           </table>
           <div class="mod-lines">
+            <p><span class="lbl">Field note</span>Retries need full jitter — <em>sleep = random(0, min(cap, base × 2^attempt))</em> — because fixed backoff syncs your retry batches into new spikes. Circuit breakers are a product decision: critical path fast-fails; non-critical paths fall back. Bulkheads: per-downstream pools contain failure. And: <em>read-only retries are safe; state-changing retries without idempotency are bugs.</em></p>
             <p><span class="lbl">Lab</span>Wrap a deliberately flaky dependency with a circuit breaker plus retry with exponential backoff and jitter; verify state stays consistent under duplicate deliveries.</p>
             <p><span class="lbl">Design doc</span><em>"Make a payment API safe under duplicate submits and a 30-second provider outage."</em></p>
           </div>
@@ -539,6 +555,7 @@
             </tbody>
           </table>
           <div class="mod-lines">
+            <p><span class="lbl">Field note</span>Kafka's durability is a <strong>per-topic dial</strong>, not a global setting: acks=0 for telemetry, acks=1 for user events, acks=all for billing — <em>the configuration is the design.</em> Team topology comes first: microservices below ~25 engineers is almost always a mistake; the database is the boundary — no DB extraction means a distributed monolith. <em>Synchronous chains are how distributed systems get slow; asynchronous chains are how they stay debuggable.</em></p>
             <p><span class="lbl">Lab</span>Build a mini message queue with at-least-once delivery, consumer retries, and an idempotent consumer. Redeliver on purpose; nothing may be lost or double-applied.</p>
             <p><span class="lbl">Design doc</span><em>"Monolith or microservices for a 12-engineer startup shipping a marketplace? Write the decision memo both ways."</em></p>
           </div>
@@ -570,19 +587,106 @@
               <p class="mod-meta">Week 12 · capstone + mock interviews</p>
             </div>
           </div>
-          <div class="prose"><p><strong>Goal.</strong> Perform under pressure, and ship one thing you built end-to-end. The seven-step framework below doubles as your real-world design-doc skeleton.</p></div>
-          <ol class="plain">
-            <li><b>Requirements</b> — functional plus non-functional: scale, latency, consistency, availability.</li>
-            <li><b>Estimation</b> — QPS, storage, bandwidth. Week 1 pays off here.</li>
-            <li><b>API surface</b> — the core endpoints, nothing more.</li>
-            <li><b>Data model</b> — entities, indexes, partitioning scheme.</li>
-            <li><b>High-level design</b> — request path and async boundaries.</li>
-            <li><b>Deep dives</b> — bottlenecks, failure modes, consistency choices.</li>
-            <li><b>Wrap</b> — name the top two risks you'd monitor on day one.</li>
-          </ol>
+          <div class="prose"><p><strong>Goal.</strong> Perform under pressure, and ship one thing you built end-to-end. The round is not a knowledge test — it is a judgment test, and the runbook below is the judgment, time-boxed. <em>Memorize the shape; fill it with anything.</em></p></div>
+          <table>
+            <thead><tr><th style="width:13%">Clock</th><th style="width:14%">Phase</th><th>What you do</th><th style="width:26%">The losing move</th></tr></thead>
+            <tbody>
+              <tr><td class="num">0:00–0:05</td><td class="t-name">Scope</td><td>The 90-second opening, four moves: reframe ("Before I draw anything, I want to make sure I'm solving the right problem") → exactly three questions — <b>scale</b>, <b>axis</b> (read-heavy / write-heavy / latency-critical / durability-critical), <b>scope</b> ("what's explicitly out of scope?" — the magic one) → name your sequence → invite redirection. Write scope in a corner and refer back to it at least three times.</td><td class="t-sub">Picking up the marker at second 12</td></tr>
+              <tr><td class="num">0:05–0:10</td><td class="t-name">Estimate</td><td>Derive four numbers aloud, in order: DAU → QPS → storage → bandwidth. "Assuming X, and assuming Y, that puts us around Z." State the peak multiplier. <em>The arithmetic is the point, not the answer.</em></td><td class="t-sub">Declaring numbers with no chain underneath</td></tr>
+              <tr><td class="num">0:10–0:25</td><td class="t-name">The spine</td><td>One clean request→response path — the simplest thing that works. Then name the first bottleneck <em>before</em> going deep: "Given [number], the first thing that breaks is [X], because [fundamental limit]."</td><td class="t-sub">Adding cache, queue, and six services before anything demands them</td></tr>
+              <tr><td class="num">0:25–0:40</td><td class="t-name">Deep dive</td><td>Pick by three filters: where senior trade-offs live, where your capacity numbers bite, where the interviewer's axis points. Seven steps: why this component → internals → alternatives → happy path → three failure modes → operations at 3 a.m. → "deeper, or move on?"</td><td class="t-sub">Going deep on a commodity component</td></tr>
+              <tr><td class="num">0:40–0:45</td><td class="t-name">Name what breaks + defend</td><td>Volunteer the weakness first: "The bottleneck here is X. At 10× scale, Y breaks first. If I had more time I'd shard Z." Answer every "why this?" with the four-part sentence below.</td><td class="t-sub">Presenting the design as failure-free</td></tr>
+            </tbody>
+          </table>
+          <div class="prose" style="margin-top:18px">
+            <p><strong>The four-part trade-off sentence</strong> — the move that wins the deep phase: <em>"[Choice] because [reason], not [alternative] because [its cost], accepting [this choice's cost]."</em> Example: "Kafka, because we need replay at this volume. If it were low-volume with complex routing, I'd use RabbitMQ. The replay requirement is what decides it."</p>
+            <p><strong>The scale jump</strong> (around minute 32 — a reset, not a continuation): never "add more servers." Name the qualitative shifts — geographic distribution (a 50–150 ms cross-region floor), multi-layer caching (each layer its own invalidation story), async everywhere, distributed data — and the staff-level fifth: <em>at 1× the bottleneck is compute; at 100× the bottleneck is coordination.</em></p>
+            <p><strong>Pushback protocol:</strong> "You're right to push on that — let me redo it" is a reset, not a defeat. Pivot, don't restart: keep the board, fix the pushed piece. Defend only about 1 in 10 pushbacks, anchored to a specific constraint or number. The interviewer is grading adaptability, not the revised architecture.</p>
+            <p><strong>Self-audit before every mock</strong> — the eight fatal mistakes: designing before scoping · demonstrating knowledge instead of judgment · covering everything at shallow depth · skipping capacity math · single points of failure · no trade-off talk · ignoring security · no observability story.</p>
+          </div>
           <div class="mod-lines">
-            <p><span class="lbl">Capstone</span>Choose one, via <em>Build Your Own X</em>: a Raft-based KV store with leader election · a message queue with delivery guarantees · a load balancer · a rate limiter · a URL shortener with a full design doc and cache/CDN layering.</p>
+            <p><span class="lbl">Drills</span><em>Interviews Vol IV</em> (ten chapters = ten drills) · <em>Interview Cheatsheet</em> (framework, mistakes, four worked patterns: feed fan-out hybrid, URL shortener, chat, search) · <em>Survival Kit</em> (the opening + round checklist) · <em>45-Minute Map</em> · <em>Visual Atlas</em> §01 (the interview, drawn).</p>
+            <p><span class="lbl">Capstone</span>Choose one, via <em>Build Your Own X</em>: a Raft-based KV store with leader election · a message queue with delivery guarantees · a load balancer · a rate limiter · a URL shortener with a full design doc and cache/CDN layering. Defend every major capstone decision with the four-part sentence.</p>
             <p><span class="lbl">Prep</span>Work through <em>Tech Interview Handbook</em> and <em>Coding Interview University</em> in parallel from Week 8 — not Week 12.</p>
+          </div>
+        </div>
+
+        <!-- PART VI -->
+        <div class="part-head">
+          <p class="kicker">Part VI — The Field Manual · Weeks 13–15</p>
+          <h3>Judgment under pressure</h3>
+          <p>The textbooks stop where the job gets hard. Two modules from the field library: run what you design, then make your judgment visible.</p>
+        </div>
+
+        <div class="module" id="m10">
+          <div class="mod-head">
+            <span class="mod-code">M10</span>
+            <div>
+              <h4>Production Operations</h4>
+              <p class="mod-meta">Weeks 13–14 · incident command · code review · written record</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Run what you design — incidents, reviews, and the written record. The first ten minutes of an incident decide whether it takes ten minutes or three hours.</p></div>
+          <div class="prose">
+            <p><strong>A · Incident command.</strong> One rule: <em>read before you write</em> — every diagnostic step is read-only until the failure is classified. Work the order: <strong>Classify → Confirm → Narrow → Mitigate → Verify.</strong> Three search-space questions: <em>What changed?</em> (most incidents are something that changed in the last hour) · <em>How wide?</em> (endpoint / service / region / everything) · <em>Is it accelerating?</em> (accelerating means mitigate now, diagnose later). Confirm with numbers, not vibes — check the dependency's own metrics, not your latency to it. Mitigate with reversible moves, one change at a time. And the capacity trap: adding instances makes retry storms, stampedes, and leaks <em>worse</em>.</p>
+          </div>
+          <table>
+            <thead><tr><th style="width:28%">Failure shape</th><th>Signature</th><th style="width:34%">First check</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Connection pool exhaustion</td><td>Everything slow, DB idle</td><td class="t-sub">Pool utilization / acquire-wait — not query time</td></tr>
+              <tr><td class="t-name">Retry storm</td><td>Load far above real traffic, no deploy behind it</td><td class="t-sub">Caller retry / backoff config</td></tr>
+              <tr><td class="t-name">Cache stampede</td><td>DB fine, then dead instantly at peak</td><td class="t-sub">A shared expiry timestamp</td></tr>
+              <tr><td class="t-name">Resource leak</td><td>Slow climb for hours or days, then a wall</td><td class="t-sub">The trend, not one snapshot</td></tr>
+              <tr><td class="t-name">Swallowed exception</td><td>Logs say success, users see failure</td><td class="t-sub">Catch blocks near the failure</td></tr>
+              <tr><td class="t-name">Deadlock / lock contention</td><td>Everyone waiting, no one working</td><td class="t-sub">Lock order, not lock count</td></tr>
+              <tr><td class="t-name">"Everything is green"</td><td>Dashboards fine, users blocked</td><td class="t-sub">One real user path, end to end</td></tr>
+            </tbody>
+          </table>
+          <div class="prose">
+            <p><strong>B · Case study — the 02:43 outage.</strong> Payments P99 climbs 280 ms → 4.2 s; the pool saturates; every DB dashboard looks healthy. Thirty-five minutes go missing in the wrong layer — until the senior's one question: <em>"What are the ten connections actually doing right now?"</em> Answer: 8 of 10 connections idle in transaction, wait_event_type = Client — the app, not the DB, holds them. Root cause: a synchronous fraud-API HTTP call inside <span class="mono-cell">@Transactional</span> — ~55 ms of DB work holding each connection ~8 s while the third party degraded: a <strong>31× throughput collapse</strong>. The fix is three structural lines (move the call before the transaction); the hardening is an audit of all 16 transactional methods, a circuit breaker, and a 30 s → 10 s acquisition timeout. The rule: <strong>transaction duration equals the duration of the slowest synchronous thing inside it.</strong> The meta-lesson: the same shape was diagnosed in 4h12m, then 1h47m, 38m, 11m, 7m, 4m, 2m, and finally 90 seconds — pattern recognition is exposure, compressed.</p>
+            <p><strong>C · Code review as an incident filter.</strong> The senior question: <em>"What would have to be true for this to break in production six months from now?"</em> Twenty patterns across eight families — correctness slips, concurrency races, database anti-patterns (N+1, missing indexes without <span class="mono-cell">CONCURRENTLY</span>, transactions held across HTTP), API contract drift, reliability omissions (clients without timeouts, retries without idempotency keys, sync calls on the critical path), security slips (log injection, IDOR / tenant scoping), test theater, and the reviewer's own judgment. Reviewer discipline: 0–3 load-bearing comments per PR; block for data loss, security, breaking APIs, migration order; approve-with-concerns for the rest. <em>Bring data, not taste.</em></p>
+            <p><strong>D · Writing it down.</strong> The ADR, six sections — decision-statement title, status, context (≤2 paragraphs), decision, alternatives considered (the section lazy authors cut and future readers most need), consequences — readable in five minutes, in version control next to the code. The postmortem: blameless means actions, not actors; <strong>max 3 action items</strong>, each with a named owner and date; review the corpus quarterly and invest in the recurring category.</p>
+          </div>
+          <div class="mod-lines">
+            <p><span class="lbl">Labs</span>Run the 7-shape triage against the 02:43 timeline and write its postmortem · review a seeded PR and leave exactly three load-bearing comments · write the ADR for your M03 sharding decision.</p>
+            <p><span class="lbl">Field reading</span><em>Production Incident Field Card</em> · <em>The 02:43 Outage</em> · <em>Code Review Playbook</em> · <em>Decision Map</em> D1–D6 + D12–D15 (rollback default rule, OOMKilled causes, load average ≠ CPU, the AI-inference-in-production trap) · <em>Staff Engineers Architecture Playbook</em> Part IV.</p>
+            <p><span class="lbl">Design doc</span><em>"Make the fraud-check pattern impossible: what changes at the code, review, and runtime layers?"</em></p>
+          </div>
+        </div>
+
+        <div class="module" id="m11">
+          <div class="mod-head">
+            <span class="mod-code">M11</span>
+            <div>
+              <h4>The Senior Track</h4>
+              <p class="mod-meta">Week 15 · decisions · communication · leveling &amp; offers</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Judgment, made visible. Senior engineering is not a knowledge problem — it is a judgment problem, and this module makes the judgment inspectable.</p></div>
+          <div class="prose">
+            <p><strong>A · The decision framework.</strong> Before any architecture decision, four questions: <em>Is this reversible? What is the blast radius? What does it cost to not decide? What does it constrain downstream?</em> Two-way doors vs one-way doors; the asymmetry rule — irreversible + wide blast radius deserves ~10× the deliberation. Five cost dimensions, of which infrastructure (the only one on the slide) is rarely the largest: engineering time, operational tax ("who is on call for this in three years?"), cognitive load, opportunity cost. <em>Most bad architecture decisions are not made deliberately. They are made by default.</em></p>
+          </div>
+          <table>
+            <thead><tr><th style="width:22%">Decision</th><th>The rule that settles it</th><th style="width:32%">The loss case</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Kafka vs RabbitMQ</td><td>Throughput / replay / ordering / ops — under ~5K msg/s the choice doesn't differentiate; replay needs a log</td><td class="t-sub">500 emails/min on a 3-broker Kafka cluster: ~10× the cost of RabbitMQ</td></tr>
+              <tr><td class="t-name">PostgreSQL vs DynamoDB</td><td>Access-pattern predictability decides; Postgres is the default until proven otherwise; after 3–4 GSIs "you are operating five tables"</td><td class="t-sub">200 req/s SaaS "for web scale": 5 GSIs by month 9, a 4-month migration back</td></tr>
+              <tr><td class="t-name">Monolith vs microservices</td><td>Team topology first (Conway); below ~25 engineers ≈ almost always a mistake; the modular monolith keeps the door open</td><td class="t-sub">12 engineers, 12 services: every feature touched 3+, 8 merged back, ~2 engineer-years lost</td></tr>
+              <tr><td class="t-name">Consistency per operation</td><td>Strong for money, inventory, uniqueness; eventual for feeds and dashboards; read-after-write is its own requirement</td><td class="t-sub">Eventually-consistent inventory cache oversold 4,000 units in a flash sale</td></tr>
+              <tr><td class="t-name">REST / gRPC / GraphQL</td><td>By consumer profile; most systems need one style, a few need two, almost nothing needs three</td><td class="t-sub">Three API styles over one data model: drift, tripled on-call, 2 of 3 deprecated</td></tr>
+              <tr><td class="t-name">Sync vs async</td><td>Latency budget + failure cost + idempotency decide; async-by-default for anything the user doesn't wait on</td><td class="t-sub">Payment auth made async: silent failures, 2 months of reconciliation infra</td></tr>
+              <tr><td class="t-name">Replicas vs sharding</td><td>&gt;80% reads → replicas (reversible); &gt;30% writes → sharding (effectively irreversible); analyze hot keys first</td><td class="t-sub">Sharded at 8K writes/s, 95% reads: ~1 engineer-year round trip for no benefit</td></tr>
+              <tr><td class="t-name">Build vs buy</td><td>Core → build; context → buy; critical-but-not-core → deliberate, time-boxed, with documented exit criteria</td><td class="t-sub">Feature flags built because "the vendor was too expensive": ~1 engineer-year wasted</td></tr>
+            </tbody>
+          </table>
+          <div class="prose">
+            <p><strong>B · Communication — the radius of thinking.</strong> What committees measure is how far the consequences of your decisions traveled: <strong>team → org → company</strong> (the scope ladder). The highest-leverage sentence: <em>"We considered [X], and chose not to, because [constraint] mattered more than [what X would have given us]."</em> Impact formula: <strong>reach × severity × business value</strong> — and if you lack the number, show the estimation method instead of inventing one. Phrase swaps: "I built X" → "I chose X over Y, because Z mattered more"; "It went well" → "It hit [metric] against a baseline of [metric]"; "I escalated it" → a documented last resort, taken with data. Self-audit against the eight failure patterns: too technical · no system thinking · escalated as first move · can't quantify · process without outcome · no trade-offs named · no mentorship signal · no story about being wrong.</p>
+            <p><strong>C · The offer.</strong> Level is the biggest lever — negotiate the level before the number. Scope and ownership over title. The real money moves in equity and sign-on, not base; competing offers in writing are the whole game. Never accept on the call — <em>the relief is the expensive emotion.</em> Compensation signals, weak vs strong: writes the most code → <em>reduces the need for code</em>; says yes to everything → <em>says no, with a reason</em>; knows the most tools → <em>knows which tool not to use</em>.</p>
+          </div>
+          <div class="mod-lines">
+            <p><span class="lbl">Labs</span>Run three decision-matrix drills aloud (pick any three rows above) · rewrite two of your own project stories through the scope ladder and phrase swaps · run the capstone defense: every major decision answered with the four questions plus the trade-off sentence.</p>
+            <p><span class="lbl">Field reading</span><em>Backend Architecture Decision Playbook</em> (all 8 decisions) · <em>Senior Backend Decision Map</em> (20 junior/senior defaults) · <em>Staff Engineers Architecture Playbook</em> Parts I–III · <em>Staff Engineer Communication Playbook</em> · <em>Staff Engineer Interview Playbook</em> · <em>What The $250K Engineer Knows</em> · <em>Decision Cards</em> · <em>Senior Backend Field Cards</em>.</p>
+            <p><span class="lbl">Design doc</span><em>"The decision record of your capstone: one ADR per major choice, each with the alternative you rejected and the cost you accepted."</em></p>
           </div>
         </div>
       </section>
@@ -651,7 +755,7 @@
 
       <!-- ================= 5 · SCHEDULE ================= -->
       <section class="block" id="schedule">
-        <div class="sec-head"><span class="sec-no">05</span><h2>The 12-week schedule</h2></div>
+        <div class="sec-head"><span class="sec-no">05</span><h2>The 15-week schedule</h2></div>
         <hr class="sec-rule">
         <table>
           <thead><tr><th style="width:9%">Week</th><th style="width:37%">Focus</th><th>Deliverable</th></tr></thead>
@@ -668,6 +772,9 @@
             <tr><td class="num">10</td><td>M08 Case sprint A</td><td>Teardowns — themes 1–4 (18 cases)</td></tr>
             <tr><td class="num">11</td><td>M08 Case sprint B</td><td>Teardowns — themes 5–8 (17 cases)</td></tr>
             <tr><td class="num">12</td><td>M09 Capstone + mock interviews</td><td>Capstone repo + two timed mock designs</td></tr>
+            <tr><td class="num">13</td><td>M10 Incident response</td><td>7-shape triage run against the 02:43 timeline + postmortem draft</td></tr>
+            <tr><td class="num">14</td><td>M10 Code review &amp; written record</td><td>Three-comment review lab + capstone ADR</td></tr>
+            <tr><td class="num">15</td><td>M11 The senior track</td><td>Decision drills + capstone defense (four questions + trade-off sentences)</td></tr>
           </tbody>
         </table>
       </section>
@@ -692,6 +799,37 @@
             <tr><td class="t-name">freeCodeCamp</td><td>Prerequisite refresh — networking, databases, APIs</td></tr>
             <tr><td class="t-name">Public APIs</td><td>Real data sources for capstone projects</td></tr>
             <tr><td class="t-name">Free Programming Books</td><td>Deep reference reading (DDIA and friends)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= 7 · FIELD LIBRARY ================= -->
+      <section class="block" id="fieldlib">
+        <div class="sec-head"><span class="sec-no">07</span><h2>The field document library — 17 volumes</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>A second layer of course material: interview runbooks, decision playbooks, incident postmortems, and code-review patterns. The ProdRescue volumes are by Devrim Özcay; the library was provided with the course material.</p>
+        </div>
+        <table>
+          <thead><tr><th style="width:5%">#</th><th style="width:32%">Document</th><th style="width:17%">Type</th><th>What it gives the course</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td class="t-name">The 45-Minute Map</td><td class="t-sub">Interview runbook</td><td>The time-boxed shape of the design round (M09)</td></tr>
+            <tr><td class="num">2</td><td class="t-name">System Design Interview Cheatsheet</td><td class="t-sub">Cheatsheet</td><td>80/20 framework, the 8 fatal mistakes, capacity formulas, four worked patterns (M01, M09)</td></tr>
+            <tr><td class="num">3</td><td class="t-name">System Design Interview Survival Kit</td><td class="t-sub">Survival guide</td><td>The 90-second opening, five rejection patterns, prompt-pattern table, round checklist (M09)</td></tr>
+            <tr><td class="num">4</td><td class="t-name">System Design Interviews Vol IV</td><td class="t-sub">Drill book</td><td>Ten drills: opening, capacity, depth vs breadth, trade-off naming, bottleneck-first, fan-out, throughput, consistency under partition, scale jump, pushback (M01, M04, M09)</td></tr>
+            <tr><td class="num">5</td><td class="t-name">System Design Visual Atlas</td><td class="t-sub">Visual atlas</td><td>36 reference diagrams, one per pattern — the picture for each lesson (all modules)</td></tr>
+            <tr><td class="num">6</td><td class="t-name">The Backend Architecture Decision Playbook</td><td class="t-sub">Decision playbook</td><td>Eight fully-decoded decisions with matrices, win/loss cases, anti-patterns (M03, M04, M07, M11)</td></tr>
+            <tr><td class="num">7</td><td class="t-name">The Senior Backend Decision Map</td><td class="t-sub">Decision map</td><td>Twenty junior-path vs senior-path default behaviors, from 2 a.m. incidents to staff interviews (M10, M11)</td></tr>
+            <tr><td class="num">8</td><td class="t-name">Staff Engineers Architecture Playbook</td><td class="t-sub">Architecture playbook</td><td>The four-question framework, reversibility &amp; blast-radius maps, five cost dimensions, four production case studies, ADR + postmortem templates (M10, M11)</td></tr>
+            <tr><td class="num">9</td><td class="t-name">The Staff Engineer Communication Playbook</td><td class="t-sub">Communication playbook</td><td>The radius of thinking, scope ladder, trade-off sentence, phrase swaps, eight failure patterns (M11)</td></tr>
+            <tr><td class="num">10</td><td class="t-name">Staff Engineer Interview Playbook</td><td class="t-sub">Interview playbook</td><td>Staff-level answer patterns, impact formula, four failure patterns, five real Q&amp;As (M11)</td></tr>
+            <tr><td class="num">11</td><td class="t-name">What The $250K Engineer Knows</td><td class="t-sub">Career guide</td><td>Eight judgment moments where compensation actually moves (M11)</td></tr>
+            <tr><td class="num">12</td><td class="t-name">Senior Engineer Decision Cards</td><td class="t-sub">Field cards</td><td>Pocket cards: the first ten minutes, the 45-minute clock, before you sign (M09, M10, M11)</td></tr>
+            <tr><td class="num">13</td><td class="t-name">Senior Backend Field Cards</td><td class="t-sub">Field cards</td><td>Pocket procedures for the 2 a.m. incident, the design interview, and the offer (M10, M11)</td></tr>
+            <tr><td class="num">14</td><td class="t-name">Production Incident Field Card</td><td class="t-sub">Field card</td><td>The 10-minute triage order and the seven failure shapes (M10)</td></tr>
+            <tr><td class="num">15</td><td class="t-name">The 02:43 Outage</td><td class="t-sub">Incident case study</td><td>Full narrated postmortem: connection-pool exhaustion via an external call inside a transaction (M10)</td></tr>
+            <tr><td class="num">16</td><td class="t-name">Code Review Playbook</td><td class="t-sub">Playbook</td><td>Twenty review patterns across eight families, plus reviewer judgment (M10)</td></tr>
+            <tr><td class="num">17</td><td class="t-name">09 System Design Reality</td><td class="t-sub">Scaling essay</td><td>The 1K → 10M user evolution: what actually breaks at each phase (M01, M02, M03, M05, M07)</td></tr>
           </tbody>
         </table>
       </section>
@@ -787,7 +925,7 @@
         </details>
       </section>
 
-      <p class="colophon">Backend System Design — a structured course. Compiled September 2026 from a curated list of 10 learning libraries, 23 canonical system-design concepts, and 35 production architecture write-ups. Single-file HTML, self-contained, opens anywhere.</p>
+      <p class="colophon">Backend System Design — a structured course. Compiled September 2026 from a curated list of 10 learning libraries, 23 canonical system-design concepts, 35 production architecture write-ups, and a 17-volume field document library (ProdRescue volumes by Devrim Özcay). Single-file HTML, self-contained, opens anywhere.</p>
 
     </div>
   </main>
