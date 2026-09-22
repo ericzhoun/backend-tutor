@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend System Design — A Structured Course</title>
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --ink: #191c1e;
+    --ink-2: #454b50;
+    --ink-3: #62686d;
+    --rule: #ddddd9;
+    --rule-strong: #c6c6c1;
+    --accent: #0e5a63;
+    --side-bg: #16191c;
+    --side-ink: #d6dada;
+    --side-mut: #93a3a6;
+    --side-rule: rgba(255,255,255,.09);
+    --side-accent: #7db9be;
+    --measure: 66ch;
+    --sans: "Avenir Next", "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Helvetica, sans-serif;
+    --mono: "Cascadia Code", "Consolas", "SF Mono", Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- shell: dark console sidebar + canvas ---------- */
+  .shell { display: grid; grid-template-columns: 264px minmax(0,1fr); min-height: 100vh; }
+  .sidebar {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; overflow-y: auto;
+    background: var(--side-bg);
+    color: var(--side-ink);
+    border-right: 1px solid var(--side-rule);
+    padding: 36px 26px 48px;
+  }
+  .side-code {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .09em;
+    color: var(--side-accent); text-transform: uppercase;
+  }
+  .side-title {
+    font-size: 17px; font-weight: 600; letter-spacing: -0.01em;
+    margin: 10px 0 4px; line-height: 1.25;
+  }
+  .side-sub {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .05em;
+    color: var(--side-mut); text-transform: uppercase;
+  }
+  .side-nav { margin-top: 34px; }
+  .side-nav .grp {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--side-mut);
+    margin: 22px 0 8px; padding-top: 18px; border-top: 1px solid var(--side-rule);
+  }
+  .side-nav a {
+    display: block; color: var(--side-ink); text-decoration: none;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
+    padding: 4px 0;
+  }
+  .side-nav a .no { color: var(--side-accent); margin-right: 8px; }
+  main { padding: 0 clamp(28px, 4vw, 72px); }
+  .canvas { max-width: 1180px; margin: 0 auto; padding-bottom: 96px; }
+  .prose { max-width: var(--measure); }
+  .prose p { margin: 0 0 1em; }
+
+  /* ---------- cover ---------- */
+  .cover { padding: 84px 0 0; }
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 {
+    font-size: clamp(40px, 4.6vw, 58px); font-weight: 600;
+    letter-spacing: -0.025em; line-height: 1.04; margin: 18px 0 0;
+    max-width: 16ch;
+  }
+  .lede {
+    font-size: 18.5px; line-height: 1.55; color: var(--ink-2);
+    max-width: 58ch; margin: 26px 0 0;
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 0 44px; row-gap: 10px;
+    margin-top: 40px; padding: 16px 0;
+    border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong);
+  }
+  .meta-row span {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .meta-row b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- route diagram ---------- */
+  .route { margin: 48px 0 8px; }
+  .route svg { width: 100%; height: auto; display: block; }
+  .route figcaption {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+    color: var(--ink-3); text-transform: uppercase; margin-top: 10px;
+  }
+
+  /* ---------- sections ---------- */
+  section.block { margin-top: 88px; }
+  .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 8px; }
+  .sec-no {
+    font-family: var(--mono); font-size: 13px; color: var(--accent);
+    letter-spacing: .08em;
+  }
+  h2 {
+    font-size: 29px; font-weight: 600; letter-spacing: -0.018em; line-height: 1.12;
+  }
+  .sec-rule { border: 0; border-top: 1px solid var(--rule-strong); margin: 14px 0 26px; }
+  .part-head { margin: 72px 0 8px; }
+  .part-head .kicker { color: var(--ink-3); }
+  .part-head h3 {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.012em; margin-top: 8px;
+  }
+  .part-head p { max-width: var(--measure); color: var(--ink-2); margin-top: 8px; }
+
+  /* ---------- module ---------- */
+  .module { margin-top: 54px; }
+  .mod-head { display: flex; gap: 20px; align-items: flex-start; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .mod-code {
+    font-family: var(--mono); font-size: 13px; letter-spacing: .1em;
+    color: var(--accent); padding-top: 5px; min-width: 44px;
+  }
+  .mod-head h4 { font-size: 19.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  .mod-meta {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); margin-top: 5px;
+  }
+  .module .prose { margin-top: 14px; color: var(--ink-2); }
+  .module .prose strong { color: var(--ink); font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+  th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .11em;
+    text-transform: uppercase; color: var(--ink-3); font-weight: 400;
+    text-align: left; padding: 0 16px 9px 0; border-bottom: 1px solid var(--rule-strong);
+  }
+  td {
+    padding: 11px 16px 11px 0; border-bottom: 1px solid var(--rule);
+    vertical-align: top; font-size: 15px; line-height: 1.5;
+  }
+  td .t-name { font-weight: 600; color: var(--ink); }
+  td .t-sub { color: var(--ink-3); font-size: 13px; }
+  td.mono, .mono-cell { font-family: var(--mono); font-size: 12.5px; }
+  .num { font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+
+  .mod-lines { margin-top: 16px; }
+  .mod-lines p { margin: 0 0 9px; max-width: var(--measure); color: var(--ink-2); }
+  .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); margin-right: 8px;
+  }
+  .mod-lines em { color: var(--ink); }
+
+  /* ---------- case catalog ---------- */
+  ol.plain { list-style: none; margin-top: 14px; max-width: var(--measure); }
+  ol.plain li { padding: 10px 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+  ol.plain li b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- appendix ---------- */
+  details { margin-top: 22px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  summary {
+    cursor: pointer; padding: 15px 0;
+    font-family: var(--mono); font-size: 12px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .appx { padding: 6px 0 26px; }
+  .appx h5 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); margin: 20px 0 8px;
+  }
+  .appx p { max-width: var(--measure); color: var(--ink-2); }
+  .link-cols { columns: 2; column-gap: 44px; }
+  .link-cols div { break-inside: avoid; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  .link-cols a { color: var(--ink-2); text-decoration: none; word-break: break-all; }
+  .link-cols .ln { color: var(--ink-3); margin-right: 6px; }
+
+  .colophon {
+    margin-top: 96px; padding-top: 20px; border-top: 1px solid var(--rule-strong);
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
+    color: var(--ink-3); line-height: 1.8; max-width: var(--measure);
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    main { padding: 0 22px; }
+    .link-cols { columns: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <p class="side-code">BSD-12</p>
+    <p class="side-title">Backend System Design</p>
+    <p class="side-sub">A structured course</p>
+    <nav class="side-nav">
+      <div class="grp">Orientation</div>
+      <a href="#how">1 · How this course works</a>
+      <a href="#map">2 · Course map</a>
+      <div class="grp">Part I — Foundations</div>
+      <a href="#m01"><span class="no">M01</span>Scaling Fundamentals</a>
+      <a href="#m02"><span class="no">M02</span>The Request Path</a>
+      <div class="grp">Part II — The Data Layer</div>
+      <a href="#m03"><span class="no">M03</span>Storage at Scale</a>
+      <a href="#m04"><span class="no">M04</span>Consistency &amp; Transactions</a>
+      <div class="grp">Part III — Performance &amp; Resilience</div>
+      <a href="#m05"><span class="no">M05</span>Caching</a>
+      <a href="#m06"><span class="no">M06</span>Resilience</a>
+      <div class="grp">Part IV — Architecture Patterns</div>
+      <a href="#m07"><span class="no">M07</span>Async Systems &amp; Coordination</a>
+      <div class="grp">Part V — Practice</div>
+      <a href="#m08"><span class="no">M08</span>Case Study Lab</a>
+      <a href="#m09"><span class="no">M09</span>Design Workshop &amp; Capstone</a>
+      <div class="grp">Reference</div>
+      <a href="#catalog">4 · Case catalog — 35 architectures</a>
+      <a href="#schedule">5 · 12-week schedule</a>
+      <a href="#libraries">6 · Core reading libraries</a>
+      <a href="#appendix">A · Source links</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="canvas">
+
+      <!-- ================= COVER ================= -->
+      <header class="cover">
+        <p class="kicker">Self-study syllabus · Twelve weeks</p>
+        <h1>Backend System Design</h1>
+        <p class="lede">From cost math to production proof: a complete route through the 23 canonical system-design concepts, grounded in 35 real architectures from Discord, Stripe, Cloudflare, Uber, and 31 other engineering teams.</p>
+        <div class="meta-row">
+          <span><b>5</b> parts</span>
+          <span><b>9</b> modules</span>
+          <span><b>23</b> concepts</span>
+          <span><b>35</b> case studies</span>
+          <span><b>10</b> source libraries</span>
+          <span><b>~9 h</b> / week</span>
+        </div>
+      </header>
+
+      <!-- ================= 1 · HOW ================= -->
+      <section class="block" id="how">
+        <div class="sec-head"><span class="sec-no">01</span><h2>How this course works</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>Every week runs the same four-step rhythm. The order matters: you diagram before you build, and you write a design doc after you build — because the doc is where the trade-offs stop being hand-wavy.</p>
+        </div>
+        <table>
+          <thead><tr><th style="width:18%">Step</th><th style="width:12%">Time</th><th>What you do</th></tr></thead>
+          <tbody>
+            <tr><td class="t-name">Read</td><td class="num">3 h</td><td>Study the module's concepts from the core reading libraries.</td></tr>
+            <tr><td class="t-name">Diagram</td><td class="num">2 h</td><td>Redraw the architecture from memory — no peeking. If you can't draw it, you can't build it.</td></tr>
+            <tr><td class="t-name">Build</td><td class="num">3 h</td><td>Implement the module's lab: small, working, real. A queue that "mostly works" teaches you exactly-once lies.</td></tr>
+            <tr><td class="t-name">Design doc</td><td class="num">1 h</td><td>One page: requirements, estimates, architecture, top two bottlenecks. The prompt is given per module.</td></tr>
+          </tbody>
+        </table>
+        <div class="prose" style="margin-top:22px">
+          <p>Two standing rules. Case studies come <em>after</em> concepts, never before — they are the exam, not the lecture. And every module ends by answering the same question in writing: <em>what breaks at 100× scale?</em></p>
+        </div>
+      </section>
+
+      <!-- ================= 2 · MAP ================= -->
+      <section class="block" id="map">
+        <div class="sec-head"><span class="sec-no">02</span><h2>Course map</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>The progression is deliberate: <strong>cost math → traffic path → state → failure → interaction patterns → production proof.</strong> Each part assumes the previous one; don't skip ahead.</p>
+        </div>
+        <figure class="route">
+          <svg viewBox="0 0 1060 148" role="img" aria-label="Course route: Foundations, Data Layer, Performance and Resilience, Architecture Patterns, Practice">
+            <g font-family="Consolas, Menlo, monospace">
+              <!-- stage boxes -->
+              <g>
+                <rect x="8" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="24" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART I</text>
+                <text x="24" y="76" font-size="14" fill="#191c1e">Foundations</text>
+                <text x="24" y="92" font-size="10.5" fill="#62686d">cost math · request path</text>
+              </g>
+              <g>
+                <rect x="228" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="244" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART II</text>
+                <text x="244" y="76" font-size="14" fill="#191c1e">Data Layer</text>
+                <text x="244" y="92" font-size="10.5" fill="#62686d">storage · consistency</text>
+              </g>
+              <g>
+                <rect x="448" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="464" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART III</text>
+                <text x="464" y="76" font-size="14" fill="#191c1e">Perf &amp; Resilience</text>
+                <text x="464" y="92" font-size="10.5" fill="#62686d">caching · fault tolerance</text>
+              </g>
+              <g>
+                <rect x="668" y="30" width="176" height="72" fill="none" stroke="#c6c6c1" stroke-width="1"/>
+                <text x="684" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART IV</text>
+                <text x="684" y="76" font-size="14" fill="#191c1e">Patterns</text>
+                <text x="684" y="92" font-size="10.5" fill="#62686d">queues · microservices</text>
+              </g>
+              <g>
+                <rect x="888" y="30" width="164" height="72" fill="none" stroke="#0e5a63" stroke-width="1.2"/>
+                <text x="904" y="56" font-size="12" fill="#0e5a63" letter-spacing="2">PART V</text>
+                <text x="904" y="76" font-size="14" fill="#191c1e">Practice</text>
+                <text x="904" y="92" font-size="10.5" fill="#62686d">35 cases · capstone</text>
+              </g>
+              <!-- arrows -->
+              <g stroke="#0e5a63" stroke-width="1.2" fill="none">
+                <line x1="184" y1="66" x2="220" y2="66"/><path d="M220 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="404" y1="66" x2="440" y2="66"/><path d="M440 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="624" y1="66" x2="660" y2="66"/><path d="M660 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+                <line x1="844" y1="66" x2="880" y2="66"/><path d="M880 66 l-7 -4 v8 z" fill="#0e5a63" stroke="none"/>
+              </g>
+              <!-- week labels -->
+              <g font-size="10.5" fill="#62686d">
+                <text x="8" y="128">W1–2</text>
+                <text x="228" y="128">W3–5</text>
+                <text x="448" y="128">W6–7</text>
+                <text x="668" y="128">W8–9</text>
+                <text x="888" y="128">W10–12</text>
+              </g>
+            </g>
+          </svg>
+          <figcaption>Five parts, twelve weeks — each part assumes the previous one</figcaption>
+        </figure>
+        <table>
+          <thead><tr><th style="width:20%">Part</th><th style="width:24%">Module</th><th>Concepts covered</th><th style="width:9%">Weeks</th></tr></thead>
+          <tbody>
+            <tr><td class="t-name">I — Foundations</td><td>M01 Scaling Fundamentals</td><td>Horizontal vs Vertical Scaling · Back-of-the-Envelope Estimation</td><td class="num">1</td></tr>
+            <tr><td></td><td>M02 The Request Path</td><td>Load Balancing · CDN · API Gateway · Rate Limiting</td><td class="num">2</td></tr>
+            <tr><td class="t-name">II — The Data Layer</td><td>M03 Storage at Scale</td><td>Database Scaling · Replication · Sharding · Partitioning</td><td class="num">3–4</td></tr>
+            <tr><td></td><td>M04 Consistency &amp; Transactions</td><td>CAP Theorem · Consistency Models · Eventual Consistency · Distributed Transactions</td><td class="num">5</td></tr>
+            <tr><td class="t-name">III — Perf &amp; Resilience</td><td>M05 Caching</td><td>Caching · Cache Invalidation</td><td class="num">6</td></tr>
+            <tr><td></td><td>M06 Resilience</td><td>Fault Tolerance · Idempotency &amp; Data Latency</td><td class="num">7</td></tr>
+            <tr><td class="t-name">IV — Patterns</td><td>M07 Async Systems &amp; Coordination</td><td>Queues · Microservices · Microservices vs Monoliths · Service Discovery · Leader Election</td><td class="num">8–9</td></tr>
+            <tr><td class="t-name">V — Practice</td><td>M08 Case Study Lab</td><td>35 production architectures, in 8 themes</td><td class="num">10–11</td></tr>
+            <tr><td></td><td>M09 Design Workshop &amp; Capstone</td><td>Interview framework · capstone builds · mock designs</td><td class="num">12</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= 3 · MODULES ================= -->
+      <section class="block" id="modules">
+        <div class="sec-head"><span class="sec-no">03</span><h2>Module syllabus</h2></div>
+        <hr class="sec-rule">
+
+        <!-- PART I -->
+        <div class="part-head">
+          <p class="kicker">Part I — Foundations · Weeks 1–2</p>
+          <h3>Know what you're up against</h3>
+          <p>Before architecture: the cost math of scale, then everything between a user's tap and your server.</p>
+        </div>
+
+        <div class="module" id="m01">
+          <div class="mod-head">
+            <span class="mod-code">M01</span>
+            <div>
+              <h4>Scaling Fundamentals</h4>
+              <p class="mod-meta">Week 1 · 2 concepts · drill-heavy</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Reason about load mathematically before touching any architecture diagram. Most design failures are arithmetic failures wearing an architecture costume.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Horizontal vs Vertical Scaling</td><td>when each is cheaper, their failure and cost curves, and why "just add machines" hides state problems rather than solving them</td></tr>
+              <tr><td class="t-name">Back-of-the-Envelope Estimation</td><td>QPS, storage, and bandwidth math from first principles; the latency numbers every engineer should know cold</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Drill</span>Memorize the latency ladder (L1/L2 cache → RAM → SSD → network RTT within and between datacenters) and practice powers-of-2 storage math until it's reflex.</p>
+            <p><span class="lbl">Lab</span>Estimate QPS, storage growth per day, bandwidth, and cache footprint for five products: URL shortener, news feed, group chat, video streaming, ride hailing.</p>
+            <p><span class="lbl">Design doc</span><em>"Estimate the infrastructure for a WhatsApp-class messenger at 50M DAU."</em></p>
+          </div>
+        </div>
+
+        <div class="module" id="m02">
+          <div class="mod-head">
+            <span class="mod-code">M02</span>
+            <div>
+              <h4>The Request Path</h4>
+              <p class="mod-meta">Week 2 · 4 concepts</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Master everything between a user's tap and your server — and know exactly where each concern lives: edge, gateway, or service.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Load Balancing</td><td>L4 vs L7, algorithms (round robin, least connections, consistent hashing), health checks, and removing the balancer itself as a single point of failure</td></tr>
+              <tr><td class="t-name">CDN</td><td>edge caching, pull vs push, cache-control headers, and what a CDN cannot help with (dynamic, personalized, low-fan-out content)</td></tr>
+              <tr><td class="t-name">API Gateway</td><td>routing, auth termination, aggregation — and when the gateway becomes a bottleneck or a monolith-in-waiting</td></tr>
+              <tr><td class="t-name">Rate Limiting</td><td>token bucket vs sliding window, distributed limiters, and the fail-open vs fail-closed decision</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Implement a token-bucket rate limiter; then draw the complete request path for a read-heavy product, edge to database.</p>
+            <p><span class="lbl">Design doc</span><em>"Launch-day traffic is 40× forecast. Where does the path break first, and in what order?"</em></p>
+          </div>
+        </div>
+
+        <!-- PART II -->
+        <div class="part-head">
+          <p class="kicker">Part II — The Data Layer · Weeks 3–5</p>
+          <h3>State is where systems get hard</h3>
+          <p>Scale storage deliberately. Choose consistency like a contract, not an accident.</p>
+        </div>
+
+        <div class="module" id="m03">
+          <div class="mod-head">
+            <span class="mod-code">M03</span>
+            <div>
+              <h4>Storage at Scale</h4>
+              <p class="mod-meta">Weeks 3–4 · 4 concepts · build week</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Make databases scale on purpose. Every sharding war story starts with a shard key chosen casually on a Friday.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Database Scaling</td><td>indexes, denormalization, read replicas, and SQL vs NoSQL selection by access pattern — not fashion</td></tr>
+              <tr><td class="t-name">Replication</td><td>leader–follower, multi-leader, and leaderless topologies; sync vs async trade-offs; failover and split brain</td></tr>
+              <tr><td class="t-name">Sharding</td><td>shard-key choice, hotspots, the real cost of resharding at 2 a.m., and consistent hashing as the fix</td></tr>
+              <tr><td class="t-name">Partitioning</td><td>range vs hash partitioning, skew, and rebalancing strategies</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Build a key-value store with consistent-hashing sharding (routed through <em>Build Your Own X</em>). It must survive adding and removing a node.</p>
+            <p><span class="lbl">Design doc</span><em>"Shard a 10 TB user table with near-zero downtime — walk through key choice and rebalancing."</em></p>
+          </div>
+        </div>
+
+        <div class="module" id="m04">
+          <div class="mod-head">
+            <span class="mod-code">M04</span>
+            <div>
+              <h4>Consistency &amp; Transactions</h4>
+              <p class="mod-meta">Week 5 · 4 concepts</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Stop using "eventually consistent" as an excuse; start using it as a decision with named consequences.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">CAP Theorem</td><td>what C and A actually mean under partition — and how PACELC adds the latency trade-off people forget</td></tr>
+              <tr><td class="t-name">Consistency Models</td><td>strong, sequential, causal, read-your-writes, eventual — and which ones users can actually notice</td></tr>
+              <tr><td class="t-name">Eventual Consistency</td><td>anti-entropy, read repair, versioning and conflict resolution; what "eventually" costs in UX</td></tr>
+              <tr><td class="t-name">Distributed Transactions</td><td>2PC mechanics and why it blocks; Sagas with compensating actions; the outbox pattern and why dual writes corrupt data</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Implement a saga with compensations for an order + payment two-service flow; then break it with a dual write and repair it with an outbox.</p>
+            <p><span class="lbl">Design doc</span><em>"Pick the consistency model for a shopping cart, a bank ledger, and a social feed. Defend each choice."</em></p>
+          </div>
+        </div>
+
+        <!-- PART III -->
+        <div class="part-head">
+          <p class="kicker">Part III — Performance &amp; Resilience · Weeks 6–7</p>
+          <h3>Control what the load does to you</h3>
+          <p>Reads get fast with caching; systems stay up with resilience engineering. Two modules, one theme.</p>
+        </div>
+
+        <div class="module" id="m05">
+          <div class="mod-head">
+            <span class="mod-code">M05</span>
+            <div>
+              <h4>Caching</h4>
+              <p class="mod-meta">Week 6 · 2 concepts</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Make reads fast without making correctness subtly wrong. There are only two hard things in computer science, and this module is one of them.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Caching</td><td>the layer stack (browser → CDN → app → DB), patterns (cache-aside, write-through, write-behind), eviction (LRU/LFU/TTL), and the thundering herd</td></tr>
+              <tr><td class="t-name">Cache Invalidation</td><td>TTL vs explicit purge vs versioned keys — and your story when data changes out-of-band</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Add cache-aside to a real API, measure hit/miss ratios, then deliberately trigger a stampede and fix it with request coalescing or locks.</p>
+            <p><span class="lbl">Design doc</span><em>"Design the full cache stack for a product-detail page over 10M SKUs."</em></p>
+          </div>
+        </div>
+
+        <div class="module" id="m06">
+          <div class="mod-head">
+            <span class="mod-code">M06</span>
+            <div>
+              <h4>Resilience</h4>
+              <p class="mod-meta">Week 7 · 2 concepts</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Design for the dependency that will fail. It will. The only question is whether your system has an opinion about it.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Fault Tolerance</td><td>timeouts, retries with backoff and jitter, circuit breakers, bulkheads, graceful degradation, chaos testing — and which retries make things worse (retry storms)</td></tr>
+              <tr><td class="t-name">Idempotency &amp; Data Latency</td><td>at-least-once vs exactly-once delivery, idempotency keys, deduplication windows, and why exactly-once is a contract you implement, not a property the network gives you</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Wrap a deliberately flaky dependency with a circuit breaker plus retry with exponential backoff and jitter; verify state stays consistent under duplicate deliveries.</p>
+            <p><span class="lbl">Design doc</span><em>"Make a payment API safe under duplicate submits and a 30-second provider outage."</em></p>
+          </div>
+        </div>
+
+        <!-- PART IV -->
+        <div class="part-head">
+          <p class="kicker">Part IV — Architecture Patterns · Weeks 8–9</p>
+          <h3>Interaction patterns at scale</h3>
+          <p>Move work off the request path, get services to agree on who leads, and decide how many services you can actually afford.</p>
+        </div>
+
+        <div class="module" id="m07">
+          <div class="mod-head">
+            <span class="mod-code">M07</span>
+            <div>
+              <h4>Async Systems &amp; Coordination</h4>
+              <p class="mod-meta">Weeks 8–9 · 5 concepts</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Learn the two moves that make distributed systems tractable: asynchronous work via queues, and coordination via discovery and leader election — then honestly price the microservices option.</p></div>
+          <table>
+            <thead><tr><th style="width:30%">Concept</th><th>You should be able to explain…</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Queues</td><td>Kafka vs RabbitMQ mental models, delivery semantics, retries, dead-letter queues, backpressure</td></tr>
+              <tr><td class="t-name">Microservices</td><td>service boundaries, data ownership, deployment independence — and the coupling that just moves into the network</td></tr>
+              <tr><td class="t-name">Microservices vs Monoliths</td><td>the splitting costs, the modular-monolith-first option, and the Conway's-law argument</td></tr>
+              <tr><td class="t-name">Service Discovery</td><td>registries, health checks, client-side vs server-side discovery, and what happens during a partial partition</td></tr>
+              <tr><td class="t-name">Leader Election</td><td>leases, consensus intuition (Raft), split-brain prevention — who leads when the leader is half-dead</td></tr>
+            </tbody>
+          </table>
+          <div class="mod-lines">
+            <p><span class="lbl">Lab</span>Build a mini message queue with at-least-once delivery, consumer retries, and an idempotent consumer. Redeliver on purpose; nothing may be lost or double-applied.</p>
+            <p><span class="lbl">Design doc</span><em>"Monolith or microservices for a 12-engineer startup shipping a marketplace? Write the decision memo both ways."</em></p>
+          </div>
+        </div>
+
+        <!-- PART V -->
+        <div class="part-head">
+          <p class="kicker">Part V — Practice · Weeks 10–12</p>
+          <h3>Proof in production</h3>
+          <p>Concepts meet reality: 35 real architectures, then one capstone and two timed mock designs.</p>
+        </div>
+
+        <div class="module" id="m08">
+          <div class="mod-head">
+            <span class="mod-code">M08</span>
+            <div>
+              <h4>Case Study Lab</h4>
+              <p class="mod-meta">Weeks 10–11 · 35 architectures · 8 themes</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> See every concept from Parts I–IV surviving contact with production. The full catalog is in section 04. Per case: a 20-minute skim, redraw the architecture from memory, then write exactly two lines — <em>one decision you'd copy, one trade-off you'd question</em>.</p></div>
+        </div>
+
+        <div class="module" id="m09">
+          <div class="mod-head">
+            <span class="mod-code">M09</span>
+            <div>
+              <h4>Design Workshop &amp; Capstone</h4>
+              <p class="mod-meta">Week 12 · capstone + mock interviews</p>
+            </div>
+          </div>
+          <div class="prose"><p><strong>Goal.</strong> Perform under pressure, and ship one thing you built end-to-end. The seven-step framework below doubles as your real-world design-doc skeleton.</p></div>
+          <ol class="plain">
+            <li><b>Requirements</b> — functional plus non-functional: scale, latency, consistency, availability.</li>
+            <li><b>Estimation</b> — QPS, storage, bandwidth. Week 1 pays off here.</li>
+            <li><b>API surface</b> — the core endpoints, nothing more.</li>
+            <li><b>Data model</b> — entities, indexes, partitioning scheme.</li>
+            <li><b>High-level design</b> — request path and async boundaries.</li>
+            <li><b>Deep dives</b> — bottlenecks, failure modes, consistency choices.</li>
+            <li><b>Wrap</b> — name the top two risks you'd monitor on day one.</li>
+          </ol>
+          <div class="mod-lines">
+            <p><span class="lbl">Capstone</span>Choose one, via <em>Build Your Own X</em>: a Raft-based KV store with leader election · a message queue with delivery guarantees · a load balancer · a rate limiter · a URL shortener with a full design doc and cache/CDN layering.</p>
+            <p><span class="lbl">Prep</span>Work through <em>Tech Interview Handbook</em> and <em>Coding Interview University</em> in parallel from Week 8 — not Week 12.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4 · CATALOG ================= -->
+      <section class="block" id="catalog">
+        <div class="sec-head"><span class="sec-no">04</span><h2>Case catalog — 35 architectures in 8 themes</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>Each theme pairs a cluster of production write-ups with the modules it reinforces. Themes 1–4 map directly onto Parts II and III — read those first, then 5–8.</p>
+        </div>
+        <table>
+          <thead><tr><th style="width:4%">#</th><th style="width:20%">Theme</th><th>Cases</th><th style="width:24%">Reinforces</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="t-name">Real-Time &amp; Messaging</td>
+              <td>Discord — Trillion Message Indexing · Twilio — Exactly-Once Delivery · Slack — Cellular Architecture Migration · Netflix — Distributed Tracing Infrastructure</td>
+              <td class="t-sub">M04 consistency · M06 idempotency · M07 queues · observability</td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="t-name">Storage &amp; Data Infrastructure</td>
+              <td>Dropbox — Magic Pocket · GitHub — Distributed Storage System · Airbnb — Key-Value Architecture · Datadog — Husky Event Store</td>
+              <td class="t-sub">M03 storage &amp; sharding · M04 consistency · M07 queues</td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="t-name">Edge &amp; Global Scale</td>
+              <td>Cloudflare — Global Edge Architecture · Pinterest — Cache Infrastructure Scaling · eBay — Distributed Listing · Walmart — Autocomplete Backend Rebuild</td>
+              <td class="t-sub">M02 CDN &amp; load balancing · M05 caching · M03 partitioning</td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="t-name">Payments &amp; Financial Reliability</td>
+              <td>Stripe — Database Migration Platform · PayPal — Kafka Scaling · Razorpay — Reliable Dual Writes · Coinbase — Solana Processing · PhonePe — Distributed Job Scheduler · Capital One — Resilient Systems</td>
+              <td class="t-sub">M04 transactions &amp; outbox · M06 idempotency &amp; resilience · M07 queues</td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="t-name">Migration Journeys</td>
+              <td>Shopify — Sharded Monolith · DoorDash — Microservices Migration · Zomato — Billing Platform Scaling</td>
+              <td class="t-sub">M03 sharding · M07 monolith↔microservices · M06 fault tolerance</td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="t-name">Event-Driven Architectures</td>
+              <td>AWS — Event-Driven Architecture · Meta — Distributed Priority Queue · Salesforce — Guaranteed Data Delivery · Canva — Analytics Event Pipeline · Etsy — Kafka Zonal Resiliency</td>
+              <td class="t-sub">M07 queues &amp; event-driven · M06 fault tolerance</td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="t-name">Platform Engineering &amp; Internal Infrastructure</td>
+              <td>Google — System Design Principles · Microsoft — Platform Engineering Paths · Atlassian — Cloud Engineering · Expedia — Configuration Management Platform · Adobe — Unified Search Architecture</td>
+              <td class="t-sub">M02 API gateway · M07 service discovery · organizational design</td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="t-name">Consumer Apps at Scale</td>
+              <td>Uber — Rider App Architecture · Spotify — Backend Infrastructure · Figma — Multi-Database Scaling · Instacart — Multi-Database Scaling</td>
+              <td class="t-sub">M03 database scaling · M05 caching · M02 request path</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= 5 · SCHEDULE ================= -->
+      <section class="block" id="schedule">
+        <div class="sec-head"><span class="sec-no">05</span><h2>The 12-week schedule</h2></div>
+        <hr class="sec-rule">
+        <table>
+          <thead><tr><th style="width:9%">Week</th><th style="width:37%">Focus</th><th>Deliverable</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>M01 Scaling fundamentals</td><td>Estimation drill sheet + 50M-DAU messenger estimate</td></tr>
+            <tr><td class="num">2</td><td>M02 Request path</td><td>Token-bucket rate limiter + full request-path diagram</td></tr>
+            <tr><td class="num">3</td><td>M03 Database scaling &amp; replication</td><td>Read-replica setup notes + failover walkthrough</td></tr>
+            <tr><td class="num">4</td><td>M03 Sharding &amp; partitioning</td><td>Consistent-hashing KV store (lab)</td></tr>
+            <tr><td class="num">5</td><td>M04 Consistency &amp; transactions</td><td>Saga lab + consistency-model cheat sheet</td></tr>
+            <tr><td class="num">6</td><td>M05 Caching</td><td>Cache-aside lab with hit-rate measurements + stampede fix</td></tr>
+            <tr><td class="num">7</td><td>M06 Resilience</td><td>Circuit-breaker lab + payment-API resilience doc</td></tr>
+            <tr><td class="num">8</td><td>M07 Queues &amp; event-driven</td><td>Mini message queue with delivery guarantees</td></tr>
+            <tr><td class="num">9</td><td>M07 Microservices &amp; coordination</td><td>Monolith-vs-microservices decision memo + Raft reading</td></tr>
+            <tr><td class="num">10</td><td>M08 Case sprint A</td><td>Teardowns — themes 1–4 (18 cases)</td></tr>
+            <tr><td class="num">11</td><td>M08 Case sprint B</td><td>Teardowns — themes 5–8 (17 cases)</td></tr>
+            <tr><td class="num">12</td><td>M09 Capstone + mock interviews</td><td>Capstone repo + two timed mock designs</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= 6 · LIBRARIES ================= -->
+      <section class="block" id="libraries">
+        <div class="sec-head"><span class="sec-no">06</span><h2>Core reading libraries</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>The ten source repositories, each with its assigned role. Original curated links are preserved verbatim in the appendix.</p>
+        </div>
+        <table>
+          <thead><tr><th style="width:38%">Library</th><th>Role in this course</th></tr></thead>
+          <tbody>
+            <tr><td class="t-name">System Design Academy</td><td>Core curriculum text for Parts I–IV</td></tr>
+            <tr><td class="t-name">Developer Roadmaps</td><td>Track progress; place yourself on the backend map</td></tr>
+            <tr><td class="t-name">Tech Interview Handbook</td><td>Interview layer for M09</td></tr>
+            <tr><td class="t-name">Coding Interview University</td><td>CS-fundamentals refresher behind every module</td></tr>
+            <tr><td class="t-name">Build Your Own X</td><td>Source of every lab and the capstone</td></tr>
+            <tr><td class="t-name">Engineering Leadership</td><td>Context for Part IV's org-level trade-offs</td></tr>
+            <tr><td class="t-name">Path to Senior Engineer Handbook</td><td>Leveling context: why seniors think in trade-offs</td></tr>
+            <tr><td class="t-name">freeCodeCamp</td><td>Prerequisite refresh — networking, databases, APIs</td></tr>
+            <tr><td class="t-name">Public APIs</td><td>Real data sources for capstone projects</td></tr>
+            <tr><td class="t-name">Free Programming Books</td><td>Deep reference reading (DDIA and friends)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= APPENDIX ================= -->
+      <section class="block" id="appendix">
+        <div class="sec-head"><span class="sec-no">A</span><h2>Source links, verbatim</h2></div>
+        <hr class="sec-rule">
+        <div class="prose">
+          <p>All 68 links from the original curated list, reproduced exactly as provided (shortened <span class="mono-cell">lnkd.in</span> redirects). Names are the stable handle; search the repo name on GitHub if a redirect expires.</p>
+        </div>
+        <details>
+          <summary>Show all 68 source links</summary>
+          <div class="appx">
+            <h5>Learning libraries (10)</h5>
+            <div class="link-cols">
+              <div><span class="ln">01</span><a href="https://lnkd.in/eKATU6QV">lnkd.in/eKATU6QV</a> — System design academy</div>
+              <div><span class="ln">02</span><a href="https://lnkd.in/epWSyzqs">lnkd.in/epWSyzqs</a> — Public APIs</div>
+              <div><span class="ln">03</span><a href="https://lnkd.in/e7EjsJNF">lnkd.in/e7EjsJNF</a> — Tech interview handbook</div>
+              <div><span class="ln">04</span><a href="https://lnkd.in/evJSNCPE">lnkd.in/evJSNCPE</a> — Coding interview university</div>
+              <div><span class="ln">05</span><a href="https://lnkd.in/ePCzV3zF">lnkd.in/ePCzV3zF</a> — Engineering leadership</div>
+              <div><span class="ln">06</span><a href="https://lnkd.in/e_4pA8xV">lnkd.in/e_4pA8xV</a> — Freecodecamp</div>
+              <div><span class="ln">07</span><a href="https://lnkd.in/e9MuB_Yg">lnkd.in/e9MuB_Yg</a> — Developer roadmaps</div>
+              <div><span class="ln">08</span><a href="https://lnkd.in/exkJCxVi">lnkd.in/exkJCxVi</a> — Path to senior engineer handbook</div>
+              <div><span class="ln">09</span><a href="https://lnkd.in/eXAzAJ3M">lnkd.in/eXAzAJ3M</a> — Free programming books</div>
+              <div><span class="ln">10</span><a href="https://lnkd.in/ekZQbTPz">lnkd.in/ekZQbTPz</a> — Build your own x</div>
+            </div>
+            <h5>System design concepts (23)</h5>
+            <div class="link-cols">
+              <div><span class="ln">01</span><a href="https://lnkd.in/gH9rdjCx">lnkd.in/gH9rdjCx</a> — Load Balancing</div>
+              <div><span class="ln">02</span><a href="https://lnkd.in/g83A7-rM">lnkd.in/g83A7-rM</a> — CDN</div>
+              <div><span class="ln">03</span><a href="https://lnkd.in/gTjxhv2V">lnkd.in/gTjxhv2V</a> — Caching</div>
+              <div><span class="ln">04</span><a href="https://lnkd.in/geC955AY">lnkd.in/geC955AY</a> — Cache Invalidation</div>
+              <div><span class="ln">05</span><a href="https://lnkd.in/gWqJzCNJ">lnkd.in/gWqJzCNJ</a> — Rate Limiting</div>
+              <div><span class="ln">06</span><a href="https://lnkd.in/gBNKpecH">lnkd.in/gBNKpecH</a> — API Gateway</div>
+              <div><span class="ln">07</span><a href="https://lnkd.in/g4yFYkEi">lnkd.in/g4yFYkEi</a> — CAP Theorem</div>
+              <div><span class="ln">08</span><a href="https://lnkd.in/gFi23iNV">lnkd.in/gFi23iNV</a> — Sharding</div>
+              <div><span class="ln">09</span><a href="https://lnkd.in/gikkrmNp">lnkd.in/gikkrmNp</a> — Replication</div>
+              <div><span class="ln">10</span><a href="https://lnkd.in/gQhJS8ii">lnkd.in/gQhJS8ii</a> — Partitioning</div>
+              <div><span class="ln">11</span><a href="https://lnkd.in/gPGiuxtu">lnkd.in/gPGiuxtu</a> — Queues</div>
+              <div><span class="ln">12</span><a href="https://lnkd.in/gZfYV2Qu">lnkd.in/gZfYV2Qu</a> — Microservices</div>
+              <div><span class="ln">13</span><a href="https://lnkd.in/gM-dKE3D">lnkd.in/gM-dKE3D</a> — Microservices Vs Monoliths</div>
+              <div><span class="ln">14</span><a href="https://lnkd.in/gdamMmtc">lnkd.in/gdamMmtc</a> — Fault Tolerance</div>
+              <div><span class="ln">15</span><a href="https://lnkd.in/ghq4v_gQ">lnkd.in/ghq4v_gQ</a> — Database Scaling</div>
+              <div><span class="ln">16</span><a href="https://lnkd.in/gjfbNVBe">lnkd.in/gjfbNVBe</a> — Service Discovery</div>
+              <div><span class="ln">17</span><a href="https://lnkd.in/gGkMENA3">lnkd.in/gGkMENA3</a> — Consistency models</div>
+              <div><span class="ln">18</span><a href="https://lnkd.in/gdSn54SK">lnkd.in/gdSn54SK</a> — Eventual Consistency</div>
+              <div><span class="ln">19</span><a href="https://lnkd.in/gTc8pSbH">lnkd.in/gTc8pSbH</a> — Distributed Transactions</div>
+              <div><span class="ln">20</span><a href="https://lnkd.in/g-kwhzSb">lnkd.in/g-kwhzSb</a> — Leader Election</div>
+              <div><span class="ln">21</span><a href="https://lnkd.in/gW-Vi9Qt">lnkd.in/gW-Vi9Qt</a> — Horizontal vs Vertical Scaling</div>
+              <div><span class="ln">22</span><a href="https://lnkd.in/gQ6vtM3U">lnkd.in/gQ6vtM3U</a> — Back of the Envelope Estimation</div>
+              <div><span class="ln">23</span><a href="https://lnkd.in/gapgNSgh">lnkd.in/gapgNSgh</a> — Idempotency, Data Latency &amp; Finale</div>
+            </div>
+            <h5>Company architecture case studies (35)</h5>
+            <div class="link-cols">
+              <div><span class="ln">01</span><a href="https://lnkd.in/gPKFwSYD">lnkd.in/gPKFwSYD</a> — Google System Design Principles</div>
+              <div><span class="ln">02</span><a href="https://lnkd.in/gBBr4Vjq">lnkd.in/gBBr4Vjq</a> — Meta Distributed Priority Queue</div>
+              <div><span class="ln">03</span><a href="https://lnkd.in/gymvyfbd">lnkd.in/gymvyfbd</a> — Microsoft Platform Engineering Paths</div>
+              <div><span class="ln">04</span><a href="https://lnkd.in/g_SNVuzE">lnkd.in/g_SNVuzE</a> — Adobe Unified Search Architecture</div>
+              <div><span class="ln">05</span><a href="https://lnkd.in/gxCVtXZu">lnkd.in/gxCVtXZu</a> — Salesforce Guaranteed Data Delivery</div>
+              <div><span class="ln">06</span><a href="https://lnkd.in/gT463eWY">lnkd.in/gT463eWY</a> — AWS Event Driven Architecture</div>
+              <div><span class="ln">07</span><a href="https://lnkd.in/gESgRhWU">lnkd.in/gESgRhWU</a> — Netflix Distributed Tracing Infrastructure</div>
+              <div><span class="ln">08</span><a href="https://lnkd.in/gGbxqbpU">lnkd.in/gGbxqbpU</a> — Uber Rider App Architecture</div>
+              <div><span class="ln">09</span><a href="https://lnkd.in/gqTSagR4">lnkd.in/gqTSagR4</a> — Airbnb Key Value Architecture</div>
+              <div><span class="ln">10</span><a href="https://lnkd.in/gfdfk7FV">lnkd.in/gfdfk7FV</a> — Dropbox Magic Pocket Architecture</div>
+              <div><span class="ln">11</span><a href="https://lnkd.in/g3NZnxAm">lnkd.in/g3NZnxAm</a> — Pinterest Cache Infrastructure Scaling</div>
+              <div><span class="ln">12</span><a href="https://lnkd.in/gtnkNEzF">lnkd.in/gtnkNEzF</a> — Slack Cellular Architecture Migration</div>
+              <div><span class="ln">13</span><a href="https://lnkd.in/gCebV4sR">lnkd.in/gCebV4sR</a> — Spotify Backend Infrastructure Architecture</div>
+              <div><span class="ln">14</span><a href="https://lnkd.in/gfAq7JTH">lnkd.in/gfAq7JTH</a> — Cloudflare Global Edge Architecture</div>
+              <div><span class="ln">15</span><a href="https://lnkd.in/gVvP7VWQ">lnkd.in/gVvP7VWQ</a> — Stripe Database Migration Platform</div>
+              <div><span class="ln">16</span><a href="https://lnkd.in/g_KZ-BA4">lnkd.in/g_KZ-BA4</a> — Shopify Sharded Monolith Changes</div>
+              <div><span class="ln">17</span><a href="https://lnkd.in/gBC5E3g2">lnkd.in/gBC5E3g2</a> — DoorDash Microservices Migration Journey</div>
+              <div><span class="ln">18</span><a href="https://lnkd.in/gRkk_d9G">lnkd.in/gRkk_d9G</a> — Discord Trillion Message Indexing</div>
+              <div><span class="ln">19</span><a href="https://lnkd.in/ga7Zfank">lnkd.in/ga7Zfank</a> — Twilio Exactly Once Delivery</div>
+              <div><span class="ln">20</span><a href="https://lnkd.in/gWcZgw3S">lnkd.in/gWcZgw3S</a> — Datadog Husky Event Store</div>
+              <div><span class="ln">21</span><a href="https://lnkd.in/gyaGJxHY">lnkd.in/gyaGJxHY</a> — Atlassian Cloud Engineering Architecture</div>
+              <div><span class="ln">22</span><a href="https://lnkd.in/gBRT8R-P">lnkd.in/gBRT8R-P</a> — PayPal Kafka Scaling Architecture</div>
+              <div><span class="ln">23</span><a href="https://lnkd.in/gqUVQRiW">lnkd.in/gqUVQRiW</a> — eBay Distributed Listing Architecture</div>
+              <div><span class="ln">24</span><a href="https://lnkd.in/gbVKZT2p">lnkd.in/gbVKZT2p</a> — Walmart Autocomplete Backend Rebuild</div>
+              <div><span class="ln">25</span><a href="https://lnkd.in/gSv385XX">lnkd.in/gSv385XX</a> — Capital One Resilient Systems</div>
+              <div><span class="ln">26</span><a href="https://lnkd.in/gReCsAkW">lnkd.in/gReCsAkW</a> — Canva Analytics Event Pipeline</div>
+              <div><span class="ln">27</span><a href="https://lnkd.in/gQqayzyk">lnkd.in/gQqayzyk</a> — Figma Multi Database Scaling</div>
+              <div><span class="ln">28</span><a href="https://lnkd.in/gRiV9ypn">lnkd.in/gRiV9ypn</a> — Razorpay Reliable Dual Writes</div>
+              <div><span class="ln">29</span><a href="https://lnkd.in/gZ4ZVDkN">lnkd.in/gZ4ZVDkN</a> — PhonePe Distributed Job Scheduler</div>
+              <div><span class="ln">30</span><a href="https://lnkd.in/g9kcikQy">lnkd.in/g9kcikQy</a> — Zomato Billing Platform Scaling</div>
+              <div><span class="ln">31</span><a href="https://lnkd.in/gyYwXm8g">lnkd.in/gyYwXm8g</a> — Coinbase Solana Processing Architecture</div>
+              <div><span class="ln">32</span><a href="https://lnkd.in/gJcnfTer">lnkd.in/gJcnfTer</a> — Etsy Kafka Zonal Resiliency</div>
+              <div><span class="ln">33</span><a href="https://lnkd.in/gkj5GerG">lnkd.in/gkj5GerG</a> — Expedia Configuration Management Platform</div>
+              <div><span class="ln">34</span><a href="https://lnkd.in/gUfawb2B">lnkd.in/gUfawb2B</a> — Instacart Multi Database Scaling</div>
+              <div><span class="ln">35</span><a href="https://lnkd.in/gDAAq6RP">lnkd.in/gDAAq6RP</a> — GitHub Distributed Storage System</div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <p class="colophon">Backend System Design — a structured course. Compiled September 2026 from a curated list of 10 learning libraries, 23 canonical system-design concepts, and 35 production architecture write-ups. Single-file HTML, self-contained, opens anywhere.</p>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
