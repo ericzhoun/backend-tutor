@@ -230,6 +230,59 @@
     color: var(--side-mut); text-transform: uppercase;
   }
 
+  /* ---------- deeptutor widget ---------- */
+  .dt-fab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 60;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em;
+    text-transform: uppercase; background: var(--side-bg); color: var(--side-ink);
+    border: 1px solid var(--side-rule); padding: 11px 16px; cursor: pointer;
+  }
+  .dt-fab:hover { border-color: var(--side-accent); }
+  .dt-panel {
+    position: fixed; right: 22px; bottom: 66px; z-index: 61;
+    width: min(380px, calc(100vw - 32px)); max-height: min(560px, 74vh);
+    display: none; flex-direction: column;
+    background: var(--bg); border: 1px solid var(--rule-strong);
+  }
+  .dt-panel.open { display: flex; }
+  .dt-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-bottom: 1px solid var(--side-rule);
+    background: var(--side-bg); color: var(--side-ink);
+  }
+  .dt-head .t { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  .dt-head button { background: none; border: none; color: var(--side-mut); cursor: pointer; font-size: 15px; font-family: var(--mono); }
+  .dt-scope { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .dt-scope select { font-family: var(--mono); font-size: 11.5px; padding: 4px 6px; border: 1px solid var(--rule-strong); background: transparent; color: var(--ink); flex: 1; }
+  .dt-msgs { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+  .dt-msg { font-size: 14px; line-height: 1.5; color: var(--ink); }
+  .dt-msg.user { align-self: flex-end; color: var(--ink-2); border-right: 2px solid var(--accent); padding-right: 10px; }
+  .dt-msg .src { display: block; margin-top: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .dt-msg .err, .dt-qz .err { color: #8b3a3a; }
+  .dt-qz { border-top: 1px solid var(--rule); padding-top: 8px; }
+  .dt-q .opt { display: block; padding: 5px 8px; font-size: 13.5px; color: var(--ink-2); }
+  .dt-q .opt.key.right { color: #2e6b4f; }
+  .dt-q .opt.key.right::after { content: "  ✓"; color: #2e6b4f; }
+  .dt-q .exp { font-size: 12.5px; color: var(--ink-3); margin-top: 4px; }
+  .dt-q > button { margin-top: 6px; }
+  .dt-input, .dt-tool { display: flex; gap: 8px; padding: 10px 14px; }
+  .dt-tool { padding-bottom: 4px; }
+  .dt-input { border-top: 1px solid var(--rule-strong); }
+  .dt-input textarea {
+    flex: 1; resize: none; font-family: var(--sans); font-size: 14px;
+    padding: 9px 10px; border: 1px solid var(--rule-strong);
+    background: transparent; color: var(--ink); height: 42px;
+  }
+  .dt-input textarea:focus { outline: none; border-color: var(--accent); }
+  .dt-input button, .dt-tool button {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    background: none; border: 1px solid var(--rule-strong); color: var(--ink);
+    padding: 8px 12px; cursor: pointer;
+  }
+  .dt-input button:hover, .dt-tool button:hover { border-color: var(--accent); }
+  .dt-input button:disabled, .dt-tool button:disabled { opacity: .5; cursor: default; }
+  .dt-status { padding: 0 14px 8px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; min-height: 18px; }
+
   .colophon {
     margin-top: 96px; padding-top: 20px; border-top: 1px solid var(--rule-strong);
     font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
@@ -1602,6 +1655,75 @@
   </main>
 </div>
 </body>
+<button class="dt-fab" id="dtFab" type="button">Ask DeepTutor</button>
+<section class="dt-panel" id="dtPanel" role="dialog" aria-label="DeepTutor panel">
+  <div class="dt-head"><span class="t">DeepTutor · course tutor</span><button id="dtClose" type="button" aria-label="Close panel">×</button></div>
+  <div class="dt-scope"><label for="dtModule">Scope</label><select id="dtModule"><option value="">Auto — whole course</option></select></div>
+  <div class="dt-msgs" id="dtMsgs"><div class="dt-msg">Ask anything from the course — answers are grounded in the lessons and cite module codes.</div></div>
+  <div class="dt-tool"><button id="dtQuiz" type="button">Generate practice quiz</button></div>
+  <div class="dt-status" id="dtStatus"></div>
+  <div class="dt-input"><textarea id="dtText" rows="1" placeholder="Ask about any module…"></textarea><button id="dtSend" type="button">Send</button></div>
+</section>
+<script>
+(function () {
+  var API = window.DEEPTUTOR_API || "";
+  var MODULES = [["M01", "Scaling Fundamentals"], ["M02", "The Request Path"], ["M03", "Storage at Scale"], ["M04", "Consistency & Transactions"], ["M05", "Caching"], ["M06", "Resilience"], ["M07", "Async & Coordination"], ["M08", "Case Study Lab"], ["M09", "Design Workshop"], ["M10", "Production Operations"], ["M11", "The Senior Track"]];
+  var fab = document.getElementById('dtFab'), panel = document.getElementById('dtPanel');
+  var msgs = document.getElementById('dtMsgs'), statusEl = document.getElementById('dtStatus');
+  var text = document.getElementById('dtText'), sel = document.getElementById('dtModule');
+  var sendBtn = document.getElementById('dtSend'), quizBtn = document.getElementById('dtQuiz');
+  var busyFlag = false;
+  MODULES.forEach(function (m) { var o = document.createElement('option'); o.value = m[0]; o.textContent = m[0] + ' · ' + m[1]; sel.appendChild(o); });
+  fab.addEventListener('click', function () { panel.classList.toggle('open'); });
+  document.getElementById('dtClose').addEventListener('click', function () { panel.classList.remove('open'); });
+  function add(t, cls) { var d = document.createElement('div'); d.className = 'dt-msg' + (cls ? ' ' + cls : ''); d.textContent = t; msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d; }
+  function busy(b, label) { statusEl.textContent = b ? (label || 'working…') : ''; sendBtn.disabled = b; quizBtn.disabled = b; }
+  function errInto(holder, msgText) { holder.textContent = ''; var e = document.createElement('span'); e.className = 'err'; e.textContent = msgText; holder.appendChild(e); }
+  async function ask() {
+    var q = text.value.trim(); if (!q || busyFlag) { return; }
+    add(q, 'user'); text.value = '';
+    if (!API) { add('DeepTutor backend is not connected yet. Set window.DEEPTUTOR_API in this page to the deployed backend URL (see the deeptutor-backend README).', ''); return; }
+    busyFlag = true; var holder = add('…', ''); busy(true, 'thinking…');
+    try {
+      var res = await fetch(API + '/api/tutor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, module: sel.value || null }) });
+      var data = await res.json();
+      if (!res.ok) { errInto(holder, data.error || ('error ' + res.status)); }
+      else {
+        holder.textContent = data.answer || '(empty response)';
+        if (data.sources && data.sources.length) { var s = document.createElement('span'); s.className = 'src'; s.textContent = 'grounded in: ' + data.sources.map(function (x) { return x.module; }).join(' · '); holder.appendChild(s); }
+      }
+    } catch (err) { errInto(holder, 'backend unreachable: ' + err.message); }
+    busyFlag = false; busy(false); msgs.scrollTop = msgs.scrollHeight;
+  }
+  async function genQuiz() {
+    if (busyFlag) { return; }
+    if (!API) { add('DeepTutor backend is not connected yet — set window.DEEPTUTOR_API in this page.', ''); return; }
+    busyFlag = true; busy(true, 'writing questions…');
+    var wrap = document.createElement('div'); wrap.className = 'dt-qz'; msgs.appendChild(wrap);
+    try {
+      var res = await fetch(API + '/api/quiz', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ module: sel.value || null, count: 4 }) });
+      var data = await res.json();
+      if (!res.ok) { wrap.textContent = data.error || ('error ' + res.status); }
+      else {
+        (data.questions || []).forEach(function (item, i) {
+          var box = document.createElement('div'); box.className = 'dt-q';
+          var qt = document.createElement('div'); qt.className = 'dt-msg'; qt.style.fontWeight = '600'; qt.textContent = (i + 1) + '. ' + item.question; box.appendChild(qt);
+          var ans = (item.answer || '').toUpperCase().charAt(0); var letters = ['A', 'B', 'C', 'D'];
+          letters.forEach(function (L, idx) { var o = item.options && item.options[idx]; if (o === undefined) { return; } var d = document.createElement('div'); d.className = 'opt'; d.textContent = L + '. ' + o; if (L === ans) { d.classList.add('key'); } box.appendChild(d); });
+          var ex = document.createElement('div'); ex.className = 'exp'; ex.hidden = true; ex.textContent = item.explanation || ''; box.appendChild(ex);
+          var show = document.createElement('button'); show.type = 'button'; show.textContent = 'Show answer'; show.addEventListener('click', function () { var k = box.querySelector('.opt.key'); if (k) { k.classList.add('right'); } ex.hidden = false; show.remove(); }); box.appendChild(show);
+          wrap.appendChild(box);
+        });
+        if (!(data.questions || []).length) { wrap.textContent = 'no questions returned — try again'; }
+      }
+    } catch (err) { wrap.textContent = 'backend unreachable: ' + err.message; }
+    busyFlag = false; busy(false); msgs.scrollTop = msgs.scrollHeight;
+  }
+  sendBtn.addEventListener('click', ask);
+  quizBtn.addEventListener('click', genQuiz);
+  text.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); } });
+})();
+</script>
 <script>
 (function () {
   var quizzes = Array.prototype.slice.call(document.querySelectorAll('.quiz'));
