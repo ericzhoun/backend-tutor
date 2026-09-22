@@ -2,7 +2,7 @@
 
 **Backend System Design — a structured course.** A 12-week self-study syllabus: 5 parts, 9 modules, 23 canonical system-design concepts, 35 production case studies, hands-on labs, and a capstone.
 
-**Read it live:** <https://ericzhoun.github.io/backend-tutor/>
+**Read it live:** <https://olivistart.com/backend-tutor/> (also served at <https://ericzhoun.github.io/backend-tutor/>)
 
 ## What's inside
 
