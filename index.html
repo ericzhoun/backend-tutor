@@ -1610,9 +1610,12 @@
   function refresh() { if (prog) { prog.textContent = done + ' / ' + quizzes.length + ' quizzes checked'; } }
   quizzes.forEach(function (quiz) {
     var qs = Array.prototype.slice.call(quiz.querySelectorAll('.q'));
-    var btn = quiz.querySelector('.quiz-check');
-    var rst = quiz.querySelector('.quiz-reset');
-    var score = quiz.querySelector('.quiz-score');
+    var actions = quiz.nextElementSibling;
+    if (!actions || !actions.classList || !actions.classList.contains('quiz-actions')) { actions = quiz.querySelector('.quiz-actions'); }
+    if (!actions) { actions = quiz.parentElement.querySelector('.quiz-actions'); }
+    var btn = actions ? actions.querySelector('.quiz-check') : null;
+    var rst = actions ? actions.querySelector('.quiz-reset') : null;
+    var score = actions ? actions.querySelector('.quiz-score') : null;
     if (!btn || !rst || !score) { return; }
     btn.addEventListener('click', function () {
       var right = 0, answered = 0;
