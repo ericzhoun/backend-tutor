@@ -185,6 +185,51 @@
   .link-cols a { color: var(--ink-2); text-decoration: none; word-break: break-all; }
   .link-cols .ln { color: var(--ink-3); margin-right: 6px; }
 
+  /* ---------- lesson & quiz ---------- */
+  .lesson-kicker {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin: 36px 0 10px;
+  }
+  .quiz { margin-top: 28px; border-top: 1px solid var(--rule-strong); }
+  .quiz-title {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-3); margin: 16px 0 2px;
+  }
+  .q { padding: 13px 0; border-bottom: 1px solid var(--rule); max-width: 760px; }
+  .q-text { font-weight: 600; margin-bottom: 8px; }
+  .q label {
+    display: block; padding: 7px 10px; margin: 3px 0;
+    border: 1px solid transparent; color: var(--ink-2);
+    font-size: 15px; cursor: pointer;
+  }
+  .q label:hover { border-color: var(--rule-strong); }
+  .q input { margin-right: 9px; }
+  .q .q-exp {
+    display: none; margin-top: 10px; padding-left: 12px;
+    border-left: 2px solid var(--rule-strong);
+    font-size: 14px; color: var(--ink-2); max-width: 660px;
+  }
+  .q .q-exp:not([hidden]) { display: block; }
+  .q.is-right .q-exp { border-left-color: #2e6b4f; }
+  .q.is-wrong .q-exp, .q.is-missed .q-exp { border-left-color: #8b3a3a; }
+  .q label.opt-right { border-color: #2e6b4f; }
+  .q label.opt-right::after { content: "  ✓"; color: #2e6b4f; }
+  .q label.opt-wrong { border-color: #8b3a3a; }
+  .q label.opt-wrong::after { content: "  ✕"; color: #8b3a3a; }
+  .quiz-actions { display: flex; gap: 16px; align-items: baseline; padding: 16px 0 0; }
+  .quiz-actions button {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em;
+    text-transform: uppercase; background: none; border: 1px solid var(--rule-strong);
+    padding: 8px 14px; cursor: pointer; color: var(--ink);
+  }
+  .quiz-actions button:hover { border-color: var(--accent); }
+  .quiz-score { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .side-prog {
+    margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--side-rule);
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+    color: var(--side-mut); text-transform: uppercase;
+  }
+
   .colophon {
     margin-top: 96px; padding-top: 20px; border-top: 1px solid var(--rule-strong);
     font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
@@ -234,6 +279,7 @@
       <a href="#fieldlib">7 · Field document library</a>
       <a href="#appendix">A · Source links</a>
     </nav>
+    <p class="side-prog" id="quiz-progress">0 / 11 quizzes checked</p>
   </aside>
 
   <main>
@@ -250,6 +296,7 @@
           <span><b>23</b> concepts</span>
           <span><b>35</b> case studies</span>
           <span><b>17</b> field documents</span>
+          <span><b>57</b> quiz questions</span>
           <span><b>~9 h</b> / week</span>
         </div>
       </header>
@@ -272,7 +319,7 @@
         </table>
         <div class="prose" style="margin-top:22px">
           <p>Two standing rules. Case studies come <em>after</em> concepts, never before — they are the exam, not the lecture. And every module ends by answering the same question in writing: <em>what breaks at 100× scale?</em></p>
-          <p>From Week 13 the rhythm is unchanged, but the material switches from textbooks to the <strong>field document library</strong> (section 07): labs become drills, reviews, and written records — the same skills, tested where they were learned.</p>
+          <p>From Week 13 the rhythm is unchanged, but the material switches from textbooks to the <strong>field document library</strong> (section 07): labs become drills, reviews, and written records — the same skills, tested where they were learned. Every module ends with a <strong>quiz</strong>: six questions (five for the lab modules), instant grading, and an explanation for every answer.</p>
         </div>
       </section>
 
@@ -393,6 +440,73 @@
             <p><span class="lbl">Field reading</span><em>System Design Reality</em> (the 1K → 10M phase narrative) · <em>Interviews Vol IV</em> ch. 02 (capacity without guessing).</p>
             <p><span class="lbl">Design doc</span><em>"Estimate the infrastructure for a WhatsApp-class messenger at 50M DAU."</em></p>
           </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p>Scaling starts as arithmetic, not architecture. The chain is always the same: users → actions per user → operations per day → average QPS → peak QPS → storage per day → bandwidth. Write the chain down before drawing a single box, and say your assumptions out loud: <em>"Assuming X, and assuming Y, that puts us around Z."</em> A derived wrong number beats a guessed right one — the chain is what you'll use to spend the company's real money.</p>
+            <p>Worked example — a URL shortener at 1B links/day: writes = 1e9 ÷ 86,400 ≈ <strong>11.6K/s</strong>; at a 100:1 read ratio, reads ≈ <strong>1.16M/s</strong>; storage at ~500 B/row ≈ 500 GB/day, roughly a petabyte over five years; with 20% hot keys and a 1-hour TTL, cache ≈ <strong>400 GB</strong>. Each number unlocks a decision: consider sharding past ~50K writes/s, tier storage past ~10 TB, CDN past ~100 MB/s egress.</p>
+          </div>
+          <table>
+            <thead><tr><th style="width:55%">Anchor number</th><th>Value to memorize</th></tr></thead>
+            <tbody>
+              <tr><td>Seconds per day</td><td>86,400 ≈ 100K — divide daily totals by 100K for a quick average</td></tr>
+              <tr><td>Round-trip time</td><td>~1 ms same-region · 50–150 ms cross-region</td></tr>
+              <tr><td>SSD</td><td>Sequential ~100 MB/s class · random reads 50–100 µs</td></tr>
+              <tr><td>Single Postgres primary</td><td>~10–50K writes/s sustained — the practical sharding threshold</td></tr>
+              <tr><td>Single Redis</td><td>~100K ops/s — the hot-key ceiling</td></tr>
+            </tbody>
+          </table>
+          <div class="prose" style="margin-top:16px">
+            <p><strong>Vertical vs horizontal.</strong> Vertical scaling is underrated: one big machine — one OS to patch, one profiler to read — covers most services' real needs. One field case replaced three layers of "scalable" infrastructure with a single 64-core box plus DB tuning and cut p99 by 40%. Horizontal earns its complexity only for embarrassingly parallel, stateless work where failure isolation matters. Its hidden taxes: in-process caches go cold on every scale-out, sticky sessions fight the load balancer, background workers fight over queues, and each instance multiplies your downstream connection footprint. State is the real reason "just add machines" fails: stateless request handling scales by cloning; state does not.</p>
+            <p><strong>Know your phase.</strong> Every architecture decision has a scale at which it becomes wrong — and both failure modes are real: premature optimization (designing for 10M with 1K users) and never optimizing until something breaks catastrophically. The phases: 1–10K users (one box, vertical) · 10–100K (read replicas, CDN, a load balancer) · 100K–1M (cache, connection pooling, extract hot paths, async) · 1M+ (sharding, multi-region, event-driven). And the redesign signal: if you've doubled the database tier three times and p99 hasn't moved, the answer is the query — an O(n²) scan scales with data, not with hardware.</p>
+          </div>
+          <div class="quiz" id="quiz-m01">
+            <p class="quiz-title">Quiz · M01 — 5 questions</p>
+            <div class="q" data-answer="b">
+              <p class="q-text">1. A product has 100M DAU and each user makes 2 requests/day. Peak traffic is 3× average. Peak QPS?</p>
+              <label><input type="radio" name="m01q1" value="a"> ~2,315</label>
+              <label><input type="radio" name="m01q1" value="b"> ~6,944</label>
+              <label><input type="radio" name="m01q1" value="c"> ~694</label>
+              <label><input type="radio" name="m01q1" value="d"> ~23,148</label>
+              <div class="q-exp" hidden>Average = 200M ÷ 86,400 ≈ 2,315 QPS; peak = 2,315 × 3 ≈ 6,944. Production systems fail at peak, not at average — state the multiplier out loud.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">2. The sustained write throughput of a single PostgreSQL primary is roughly…</p>
+              <label><input type="radio" name="m01q2" value="a"> 500–1,000 writes/s</label>
+              <label><input type="radio" name="m01q2" value="b"> 100–500K writes/s</label>
+              <label><input type="radio" name="m01q2" value="c"> 10–50K writes/s</label>
+              <label><input type="radio" name="m01q2" value="d"> ~5M writes/s</label>
+              <div class="q-exp" hidden>~10–50K writes/s sustained is the working ceiling — it's why the sharding conversation starts seriously past that range, and why Redis' ~100K ops/s is the hot-key ceiling next to it.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">3. Which of these is effectively a one-way door (irreversible once real data flows)?</p>
+              <label><input type="radio" name="m01q3" value="a"> Raising a connection-pool limit</label>
+              <label><input type="radio" name="m01q3" value="b"> Adding a read replica</label>
+              <label><input type="radio" name="m01q3" value="c"> Adding a CDN in front of static assets</label>
+              <label><input type="radio" name="m01q3" value="d"> Choosing the shard key</label>
+              <div class="q-exp" hidden>The shard key decides every future query's shape and requires re-sharding to undo — treat it as irreversible and give it ~10× the deliberation. The other three are reversible within days.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">4. Horizontal scaling is most likely to disappoint when…</p>
+              <label><input type="radio" name="m01q4" value="a"> Instances hold in-process caches and sticky sessions</label>
+              <label><input type="radio" name="m01q4" value="b"> Work is stateless and CPU-bound</label>
+              <label><input type="radio" name="m01q4" value="c"> Work is embarrassingly parallel</label>
+              <label><input type="radio" name="m01q4" value="d"> Failure isolation matters more than latency</label>
+              <div class="q-exp" hidden>Scale-out works by cloning stateless request handling. In-process caches go cold on each new instance, sticky sessions break even distribution, and each instance multiplies downstream connection footprints — the load spreads, the benefit doesn't.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">5. You've doubled the database tier three times and p99 latency is unchanged. The most likely next move:</p>
+              <label><input type="radio" name="m01q5" value="a"> Double it a fourth time</label>
+              <label><input type="radio" name="m01q5" value="b"> Add more read replicas</label>
+              <label><input type="radio" name="m01q5" value="c"> Profile the query — likely an O(n²) scan or missing index</label>
+              <label><input type="radio" name="m01q5" value="d"> Migrate to NoSQL</label>
+              <div class="q-exp" hidden>Scaling repeatedly without proportional improvement means the bottleneck scales with data, not hardware — a query-shaped problem. Hardware hides it; only the redesign removes it.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <div class="module" id="m02">
@@ -416,6 +530,63 @@
           <div class="mod-lines">
             <p><span class="lbl">Lab</span>Implement a token-bucket rate limiter; then draw the complete request path for a read-heavy product, edge to database.</p>
             <p><span class="lbl">Design doc</span><em>"Launch-day traffic is 40× forecast. Where does the path break first, and in what order?"</em></p>
+          </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p>The path, in order: <strong>client → DNS → CDN edge → load balancer (L4/L7) → API gateway → service → data.</strong> TLS typically terminates at the edge or the balancer. Every concern has a home — the design review question is always "which layer owns this?"</p>
+            <p><strong>Load balancing.</strong> L4 balancers are fast and connection-level; L7 balancers read the request — path, host, headers — and route smartly. Algorithms: round-robin ignores actual load; least-connections adapts to slow consumers; consistent hashing gives session affinity without a session store. Health checks evict dead nodes — that's what makes the balancer itself not a single point of failure.</p>
+            <p><strong>CDN.</strong> Pull mode (edge fetches on miss) protects the origin; push mode pre-warms. Cache-control headers and versioned URLs make invalidation instant. A CDN cannot fix dynamic, personalized, low-fan-out responses — the per-user tail still lands on your origin.</p>
+            <p><strong>API gateway.</strong> Routing, auth termination, aggregation, rate limiting, metrics — all cross-cutting, all belong at the edge. The smell to watch: business logic creeping into the gateway. Now every product change deploys through a shared component owned by nobody — a monolith-in-waiting.</p>
+            <p><strong>Rate limiting.</strong> Token bucket (capacity + refill rate) allows controlled bursts; sliding window is strict over the window. Enforce atomically — Redis + Lua — or two instances will double-count. Tier it: global → per API key → per endpoint → per user, and return <span class="mono-cell">X-RateLimit-*</span> + <span class="mono-cell">Retry-After</span> so well-behaved clients can back off. On limiter-store failure, the production default for a public read-heavy API is <strong>fail open with an alert</strong>; money paths fail closed.</p>
+            <p><strong>Two adjacent traps.</strong> Pagination: <span class="mono-cell">OFFSET</span> at page 500 reads 10,020 rows and discards 10,000 — cursor pagination on a (created_at, id) tuple reads 20 rows at any depth. Real-time: long polling works anywhere and wastes; SSE is one-way over HTTP/2 with auto-reconnect; WebSockets are bidirectional but stateful — cross-server fan-out needs Redis pub/sub or sticky sessions.</p>
+          </div>
+          <div class="quiz" id="quiz-m02">
+            <p class="quiz-title">Quiz · M02 — 5 questions</p>
+            <div class="q" data-answer="c">
+              <p class="q-text">1. Which load-balancing algorithm gives session affinity without a session store?</p>
+              <label><input type="radio" name="m02q1" value="a"> Round-robin</label>
+              <label><input type="radio" name="m02q1" value="b"> Least connections</label>
+              <label><input type="radio" name="m02q1" value="c"> Consistent hashing</label>
+              <label><input type="radio" name="m02q1" value="d"> Random</label>
+              <div class="q-exp" hidden>Consistent hashing maps the same client/key to the same node, and rebalances minimally when nodes join or leave — affinity without sticky-session state.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. A client needs to burst above its average rate occasionally. Which limiter fits?</p>
+              <label><input type="radio" name="m02q2" value="a"> Token bucket</label>
+              <label><input type="radio" name="m02q2" value="b"> Sliding window log</label>
+              <label><input type="radio" name="m02q2" value="c"> Fixed window counter</label>
+              <label><input type="radio" name="m02q2" value="d"> None of them allow bursts</label>
+              <div class="q-exp" hidden>A token bucket accumulates unused capacity up to a cap, so short bursts pass while the sustained rate stays bounded. Sliding windows enforce the rate strictly; fixed windows double-count across boundaries.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">3. Your rate limiter's Redis dies. It fronts a public, read-heavy API. Production default?</p>
+              <label><input type="radio" name="m02q3" value="a"> Fail closed — reject all traffic</label>
+              <label><input type="radio" name="m02q3" value="b"> Fail open — allow traffic and alert loudly</label>
+              <label><input type="radio" name="m02q3" value="c"> Return 500s from the limiter</label>
+              <label><input type="radio" name="m02q3" value="d"> Restart Redis before serving</label>
+              <div class="q-exp" hidden>For most public APIs, rejecting everyone because the limiter is down is worse than briefly trusting your clients — fail open, page someone. Money-moving paths are the exception: they fail closed.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">4. Why does OFFSET pagination collapse at depth?</p>
+              <label><input type="radio" name="m02q4" value="a"> The index gets smaller each page</label>
+              <label><input type="radio" name="m02q4" value="b"> OFFSET is not supported by indexes</label>
+              <label><input type="radio" name="m02q4" value="c"> It only affects the last page</label>
+              <label><input type="radio" name="m02q4" value="d"> Page 500 reads 10,020 rows and discards 10,000</label>
+              <div class="q-exp" hidden>OFFSET walks and throws away every prior row — cost grows linearly with depth. A cursor on (created_at, id) seeks straight to the position: 20 rows at any depth.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">5. Which of these is a design smell in an API gateway?</p>
+              <label><input type="radio" name="m02q5" value="a"> Business logic and service aggregation accumulating in the gateway</label>
+              <label><input type="radio" name="m02q5" value="b"> TLS termination</label>
+              <label><input type="radio" name="m02q5" value="c"> Per-route rate limiting</label>
+              <label><input type="radio" name="m02q5" value="d"> Request routing by path</label>
+              <div class="q-exp" hidden>Cross-cutting concerns belong at the edge; product logic doesn't. Logic in the gateway means every feature deploys through a shared component — a monolith-in-waiting with the worst ownership in the company.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
           </div>
         </div>
 
@@ -448,6 +619,60 @@
             <p><span class="lbl">Lab</span>Build a key-value store with consistent-hashing sharding (routed through <em>Build Your Own X</em>). It must survive adding and removing a node.</p>
             <p><span class="lbl">Design doc</span><em>"Shard a 10 TB user table with near-zero downtime — walk through key choice and rebalancing."</em></p>
           </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p><strong>Choose by access pattern.</strong> PostgreSQL is the default until your workload proves otherwise: real ACID, joins, ad-hoc queries, JSONB, logical replication, partitioning to billions of rows. Purpose-built stores win when access patterns are <em>fixed</em> and writes are <em>extreme</em> — the win case: a mobile app with two known key patterns at 80K+ writes/s on DynamoDB, whose only operational work was watching the bill. The trap: unpredictable access on a key-value store means a new global secondary index per query — by the 3rd–4th GSI, "you are operating five tables," and each new query becomes a three-week project.</p>
+            <p><strong>Replicas before sharding.</strong> When reads dominate (read:write above ~3:1) or analytics blocks writes, read replicas absorb the load with a fraction of the engineering cost. Lag is real (~50 ms typical) — reads are eventually consistent unless pinned; read-your-writes pins the session to the primary for a few seconds after a write. The boundary rule: <strong>replicas are reversible; they add zero write throughput</strong> — every replica receives every write.</p>
+            <p><strong>Sharding is the last resort with a one-way door.</strong> Shard when a table passes ~500 GB–1 TB after optimization, or writes exceed the largest single primary. Hash sharding distributes evenly but kills cross-shard range queries; range sharding keeps ranges local but the last shard collects all new signups — a built-in hotspot. Hot keys: one tenant pulling 80K ops/s against a ~50K/s partition ceiling gets sub-partitioned into 4 × 20K/s, trading strict ordering for throughput. Before sharding, exhaust indexes, query optimization, partitioning, replicas, and pooling — because after sharding you inherit app-level cross-shard joins, distributed transactions, N× schema migrations with drift risk, a separate aggregation layer for analytics, and per-shard backups. The loss case: sharded "in preparation" at 8K writes/s with 95% reads — ~1 engineer-year round trip for no benefit. The win case: 95%-read platform, 3 replicas in 2 weeks, survived 5× growth.</p>
+          </div>
+          <div class="quiz" id="quiz-m03">
+            <p class="quiz-title">Quiz · M03 — 5 questions</p>
+            <div class="q" data-answer="b">
+              <p class="q-text">1. A 500 GB table serves 95% reads. Single primary is at 20% write capacity. First move?</p>
+              <label><input type="radio" name="m03q1" value="a"> Shard by user_id immediately</label>
+              <label><input type="radio" name="m03q1" value="b"> Add read replicas (reversible, days of work)</label>
+              <label><input type="radio" name="m03q1" value="c"> Migrate to DynamoDB</label>
+              <label><input type="radio" name="m03q1" value="d"> Add more connection pools</label>
+              <div class="q-exp" hidden>&gt;80% reads → replicas; &gt;30% writes → sharding. Replicas are reversible and cheap; sharding at this profile is a one-way door with no benefit — the famous ~1 engineer-year round trip.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. The structural flaw of range-based sharding (A–F / G–M / N–Z)?</p>
+              <label><input type="radio" name="m03q2" value="a"> The last range collects all new signups — a built-in hotspot</label>
+              <label><input type="radio" name="m03q2" value="b"> It can't support range queries</label>
+              <label><input type="radio" name="m03q2" value="c"> It requires consistent hashing</label>
+              <label><input type="radio" name="m03q2" value="d"> It doubles storage</label>
+              <div class="q-exp" hidden>Range sharding keeps related rows together but monotonic keys pile onto the newest range. Hash distributes evenly but destroys cross-shard range queries — pick your poison by access pattern.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">3. Why don't read replicas increase write throughput?</p>
+              <label><input type="radio" name="m03q3" value="a"> Replicas are read-only by license</label>
+              <label><input type="radio" name="m03q3" value="b"> Replicas add write throughput linearly</label>
+              <label><input type="radio" name="m03q3" value="c"> Every replica receives every write — the primary still serializes them</label>
+              <label><input type="radio" name="m03q3" value="d"> Writes bypass the primary</label>
+              <div class="q-exp" hidden>Replication copies the primary's full write stream. Only sharding splits the write load across independent primaries — which is exactly why it's the harder, irreversible decision.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">4. "Read-your-writes" after a user updates their profile is best delivered by…</p>
+              <label><input type="radio" name="m03q4" value="a"> Making all reads strong globally</label>
+              <label><input type="radio" name="m03q4" value="b"> Pinning that session to the primary for a few seconds after the write</label>
+              <label><input type="radio" name="m03q4" value="c"> Waiting for all replicas before acking the write</label>
+              <label><input type="radio" name="m03q4" value="d"> Disabling replicas</label>
+              <div class="q-exp" hidden>Session pinning (or a client-side overlay of own writes) buys read-your-writes for one user while everyone else keeps reading cheap replicas — per-operation consistency instead of global strong.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">5. One tenant pushes 80K ops/s against a ~50K/s per-partition ceiling. The fix:</p>
+              <label><input type="radio" name="m03q5" value="a"> Ask them to slow down</label>
+              <label><input type="radio" name="m03q5" value="b"> Add read replicas</label>
+              <label><input type="radio" name="m03q5" value="c"> Raise the ceiling in config</label>
+              <label><input type="radio" name="m03q5" value="d"> Sub-partition that tenant into 4 × 20K/s, trading strict ordering for throughput</label>
+              <div class="q-exp" hidden>The hot-key problem has exactly one structural fix: split the key's traffic across multiple partitions. Relaxed ordering per sub-key is the accepted cost.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <div class="module" id="m04">
@@ -472,6 +697,61 @@
             <p><span class="lbl">Field note</span>Consistency is chosen <strong>per operation, not per system</strong>: strong for balance reads, inventory deduction, uniqueness; eventual for feeds, dashboards, search indexes; read-after-write as its own requirement (session pinning). And never forget: <em>eventual consistency without a saga is data corruption with a delay.</em></p>
             <p><span class="lbl">Lab</span>Implement a saga with compensations for an order + payment two-service flow; then break it with a dual write and repair it with an outbox.</p>
             <p><span class="lbl">Design doc</span><em>"Pick the consistency model for a shopping cart, a bank ledger, and a social feed. Defend each choice."</em></p>
+          </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p><strong>CAP, honestly.</strong> Network partitions are rare but nonzero — that's the theorem. The trade you make <em>every day</em> is latency (the E in PACELC): a strong cross-region write costs 80–200 ms every single time, partition or not. Choose per operation, not per system.</p>
+            <p><strong>The ladder:</strong> strong → sequential → causal → read-your-writes → eventual. Users notice exactly two failures: invariant violations (oversold inventory, negative balance) and their own writes vanishing. They rarely notice a 200 ms-stale feed. So: <strong>always strong</strong> for money-balance reads, inventory decrement under contention, uniqueness constraints, and permission checks; <strong>fine eventual</strong> for dashboards, feeds, counters, analytics, caches, and search indexes. The wallet runs on three profiles simultaneously: balance on the transaction path = strong (SELECT FOR UPDATE); own dashboard balance = read-your-writes (session pin); transaction history and view counts = eventual with bounded lag.</p>
+            <p><strong>Distributed transactions.</strong> Two-phase commit blocks: locks are held while every coordinator answers, so a slow participant freezes everyone. A <strong>saga</strong> chains local transactions with <em>compensating actions</em> — debit wallet → credit merchant → append audit; if the credit fails, re-credit the wallet and append a reversal entry. Intermediate states are visible by design; the audit log is the reconciliation source of truth. The compensating action is the part everyone skips — designing it <em>is</em> the design. And the dual-write trap: writing to the database and the broker separately <em>will</em> diverge when the process dies between the two writes. The <strong>outbox pattern</strong> writes state + event in one local transaction and lets a relay publish.</p>
+            <p>Memorize the sentence: <em>eventual consistency without a saga is data corruption with a delay.</em> Under partition, "eventual" lag is measured in minutes; while degraded, hours. The loss case: an eventually-consistent inventory cache (≤2 s lag) oversold 4,000 units in a flash sale — display may lie; the deduction path may not.</p>
+          </div>
+          <div class="quiz" id="quiz-m04">
+            <p class="quiz-title">Quiz · M04 — 5 questions</p>
+            <div class="q" data-answer="d">
+              <p class="q-text">1. Which requirement must be strongly consistent?</p>
+              <label><input type="radio" name="m04q1" value="a"> A video view counter</label>
+              <label><input type="radio" name="m04q1" value="b"> A social feed timeline</label>
+              <label><input type="radio" name="m04q1" value="c"> An analytics dashboard</label>
+              <label><input type="radio" name="m04q1" value="d"> Username uniqueness during signup</label>
+              <div class="q-exp" hidden>Uniqueness is an invariant — two accounts with one username is corruption, not staleness. Counters, feeds, and dashboards tolerate bounded staleness by design.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. Two-phase commit's practical cost:</p>
+              <label><input type="radio" name="m04q2" value="a"> Locks are held while every coordinator answers — one slow or failed participant blocks everyone</label>
+              <label><input type="radio" name="m04q2" value="b"> It loses data on success</label>
+              <label><input type="radio" name="m04q2" value="c"> It only works within one database</label>
+              <label><input type="radio" name="m04q2" value="d"> It doubles read latency</label>
+              <div class="q-exp" hidden>2PC's blocking window is why teams reach for sagas: local transactions keep locks short and failures local, at the price of visible intermediate states.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">3. The part of a saga that teams most often skip — and shouldn't:</p>
+              <label><input type="radio" name="m04q3" value="a"> The happy-path ordering</label>
+              <label><input type="radio" name="m04q3" value="b"> The compensating actions for each step</label>
+              <label><input type="radio" name="m04q3" value="c"> The message broker</label>
+              <label><input type="radio" name="m04q3" value="d"> The database indexes</label>
+              <div class="q-exp" hidden>"Debit wallet, credit merchant" is easy — the design is what happens when the credit fails. If you can't name the reversal, you don't have a saga; you have a distributed transaction with extra steps.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">4. Writing the order to the database and publishing the event to Kafka as two separate writes will eventually…</p>
+              <label><input type="radio" name="m04q4" value="a"> Work fine with retries</label>
+              <label><input type="radio" name="m04q4" value="b"> Be faster than one write</label>
+              <label><input type="radio" name="m04q4" value="c"> Diverge — the process can die between the two writes; the outbox pattern fixes it</label>
+              <label><input type="radio" name="m04q4" value="d"> Be prevented by Kafka's acks=all</label>
+              <div class="q-exp" hidden>Dual writes have no atomicity. The outbox writes state + event in one local transaction; a relay publishes. Kafka's durability settings don't help — the divergence is on your side of the network.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. "Users must see their own post instantly; everyone else within a second." The right design:</p>
+              <label><input type="radio" name="m04q5" value="a"> Strong consistency for all reads</label>
+              <label><input type="radio" name="m04q5" value="b"> Read-your-writes for the author (session pin) + eventual replication for everyone else</label>
+              <label><input type="radio" name="m04q5" value="c"> Two-phase commit on every post</label>
+              <label><input type="radio" name="m04q5" value="d"> A global write lock</label>
+              <div class="q-exp" hidden>Read-your-writes is its own rung on the ladder — cheap to deliver with a session pin, while the other 99.99% of reads stay on lagging replicas.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
           </div>
         </div>
 
@@ -503,6 +783,61 @@
             <p><span class="lbl">Lab</span>Add cache-aside to a real API, measure hit/miss ratios, then deliberately trigger a stampede and fix it with request coalescing or locks.</p>
             <p><span class="lbl">Design doc</span><em>"Design the full cache stack for a product-detail page over 10M SKUs."</em></p>
           </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p><strong>The stack compounds.</strong> A CDN absorbs ~70% of traffic; a regional cache takes ~60% of what remains (→ ~88% cumulative); an in-process cache ~50% of the rest (→ ~94%); the database buffer pool ~80% of what's left (→ ~99%). Each layer's miss costs roughly 10× the layer above to serve — only ~1% of reads ever touch disk. That's why <strong>cache hit ratio is the SLO at scale</strong>, not a performance optimization on top of one.</p>
+            <p><strong>Before caching, pass all four checks</strong> — read:write above ~10:1 · short staleness acceptable · the computation or query is genuinely expensive · projected hit rate above ~50%. Per-user data fails the test: <em>"cache per-user = cache with no hits = just a slow write."</em> And don't cache when the bottleneck is elsewhere — CPU, network, auth. Caching is a fourth-priority fix: profile the query, then indexes, then the read pattern, then Redis. <em>Caches turn one bug into two bugs.</em></p>
+            <p><strong>Patterns.</strong> Cache-aside: on miss, load from DB, set with TTL — simplest, default, stale until eviction; the miss path (~6 ms) costs ~30× the hit path (~200 µs). Write-through: every write updates cache and DB together — consistent, but write latency rises and the cache becomes load-bearing. Write-behind: fast writes with a loss window. Whatever you pick, <strong>name the invalidation strategy on day one</strong> — TTL (guaranteed staleness within the window), event-driven purge (fast but racy), or both. The real-world failure isn't the mechanism; it's never writing the staleness tolerance down — the split-brain user-email incident happened because nobody did.</p>
+            <p><strong>Stampede.</strong> A hot key expires and 200 requests miss simultaneously → 200 identical queries → pool exhaustion. Defenses, each ~10 lines of code: <strong>single-flight / request coalescing</strong> (one in-flight load per key; 199 requests wait), <strong>TTL jitter</strong> (spread expiries), <strong>stale-while-revalidate</strong> (serve stale, refresh async), probabilistic early refresh. The incident that proves the stakes: Redis failover → 10-minute cold cache → 100% of reads hit the DB → DB down → cache stays empty because the DB is down. The rule: <strong>a cache the system cannot survive without is not a cache — it is a tier of your architecture.</strong> Treat it like one: monitor it, protect it, pre-warm it.</p>
+          </div>
+          <div class="quiz" id="quiz-m05">
+            <p class="quiz-title">Quiz · M05 — 5 questions</p>
+            <div class="q" data-answer="c">
+              <p class="q-text">1. The cache-when checklist requires…</p>
+              <label><input type="radio" name="m05q1" value="a"> Any read-heavy traffic</label>
+              <label><input type="radio" name="m05q1" value="b"> A Redis instance and a TTL</label>
+              <label><input type="radio" name="m05q1" value="c"> All four: read:write &gt;10:1, acceptable staleness, expensive computation, projected hit rate &gt;50%</label>
+              <label><input type="radio" name="m05q1" value="d"> Only a high hit rate</label>
+              <div class="q-exp" hidden>All four — miss any one and the cache adds latency and a second failure mode without paying for itself. "Caches turn one bug into two bugs."</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. A hot key expires at peak; 200 requests miss simultaneously. First-line fix?</p>
+              <label><input type="radio" name="m05q2" value="a"> Single-flight / request coalescing — one load per key, 199 wait</label>
+              <label><input type="radio" name="m05q2" value="b"> A bigger database</label>
+              <label><input type="radio" name="m05q2" value="c"> More application servers</label>
+              <label><input type="radio" name="m05q2" value="d"> A longer TTL alone</label>
+              <div class="q-exp" hidden>Coalescing collapses 200 identical queries into 1. A longer TTL just moves the cliff; more app servers multiply the herd. Full defense: coalescing + TTL jitter + stale-while-revalidate.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">3. In cache-aside, the miss path vs the hit path costs roughly…</p>
+              <label><input type="radio" name="m05q3" value="a"> The same</label>
+              <label><input type="radio" name="m05q3" value="b"> ~30× more on a miss (~6 ms vs ~200 µs)</label>
+              <label><input type="radio" name="m05q3" value="c"> Half on a miss</label>
+              <label><input type="radio" name="m05q3" value="d"> 1000× on a miss</label>
+              <div class="q-exp" hidden>Hit ≈ 200 µs (Redis ~100 µs); miss = SELECT + SET with a round trip through the DB. That ratio is why hit ratio — not average latency — is the number to watch.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">4. Why is "cache each user's profile page" usually an anti-pattern?</p>
+              <label><input type="radio" name="m05q4" value="a"> Profiles are too large</label>
+              <label><input type="radio" name="m05q4" value="b"> It violates GDPR</label>
+              <label><input type="radio" name="m05q4" value="c"> TTLs can't be set per user</label>
+              <label><input type="radio" name="m05q4" value="d"> Near-zero reuse — each entry is read once: "a cache with no hits = just a slow write"</label>
+              <div class="q-exp" hidden>Caching pays when many readers share an entry. Per-user data fails the hit-rate and staleness checks — spend the effort on the shared layers instead.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. After Redis failed over, the cold cache sent 100% of reads to the DB and took it down. Deepest lesson?</p>
+              <label><input type="radio" name="m05q5" value="a"> Redis should not be used in production</label>
+              <label><input type="radio" name="m05q5" value="b"> The cache had become a load-bearing tier — it needs pre-warming, monitoring, and stampede defenses</label>
+              <label><input type="radio" name="m05q5" value="c"> The DB was under-provisioned</label>
+              <label><input type="radio" name="m05q5" value="d"> Failover should be disabled</label>
+              <div class="q-exp" hidden>"A cache the system cannot survive without is not a cache — it is a tier of your architecture." This one had drifted from reversible optimization to unmonitored dependency.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <div class="module" id="m06">
@@ -525,6 +860,61 @@
             <p><span class="lbl">Field note</span>Retries need full jitter — <em>sleep = random(0, min(cap, base × 2^attempt))</em> — because fixed backoff syncs your retry batches into new spikes. Circuit breakers are a product decision: critical path fast-fails; non-critical paths fall back. Bulkheads: per-downstream pools contain failure. And: <em>read-only retries are safe; state-changing retries without idempotency are bugs.</em></p>
             <p><span class="lbl">Lab</span>Wrap a deliberately flaky dependency with a circuit breaker plus retry with exponential backoff and jitter; verify state stays consistent under duplicate deliveries.</p>
             <p><span class="lbl">Design doc</span><em>"Make a payment API safe under duplicate submits and a 30-second provider outage."</em></p>
+          </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p><strong>Timeouts are a budget.</strong> If the user-facing budget is 3 s, no downstream may hold a 5 s timeout — a downstream timeout longer than its upstream's remaining budget is <em>functionally infinite</em>. Keep upstream &gt; downstream at every hop, and propagate deadlines (gRPC natively; context propagation elsewhere). Ask "what happens if this is <em>slow</em>?" not "what happens if it fails" — a slow dependency saturates thread and connection pools and cascades; a fast-failing one just errors.</p>
+            <p><strong>Retries: exponential backoff with full jitter</strong> — <em>sleep = random(0, min(cap, base × 2^attempt))</em>. Fixed backoff aligns everyone's retries into new spikes at +1s/+2s/+4s; jitter spreads them under capacity. Retries are load multipliers: cap attempts, keep a retry budget (~≤10% of traffic), and never retry a state-changing operation without an idempotency key — <em>read-only retries are safe; state-changing retries without idempotency are bugs.</em></p>
+            <p><strong>The circuit breaker:</strong> CLOSED → errors above ~50% over a 20-request window → OPEN, return the fallback in &lt;1 ms → after ~30 s, HALF-OPEN, probe one request at a time: success closes, failure reopens. Pair every breaker with a real fallback. It's a product decision per dependency: critical path (payments, identity) fast-fails; non-critical (recommendations) degrades to a sensible default.</p>
+            <p><strong>Bulkheads:</strong> one shared 100-connection pool means a hung paymentsvc bleeds the entire app. Per-downstream pools (PAY 50, PROF 8) contain the blast radius. <strong>Idempotency:</strong> every state-changing retry carries an idempotency key per logical attempt (the Stripe-Idempotency-Key pattern), checked before processing, conditional writes, key TTL 7–30 days. Exactly-once is a contract you implement with dedup + transactional processing — not a property the network hands you. And the operational layer: 3-2-1 backups (3 copies, 2 media, 1 offsite) with a <em>monthly restore drill</em> — the restore time you measure is your real RTO; RPO is the data you can afford to lose.</p>
+          </div>
+          <div class="quiz" id="quiz-m06">
+            <p class="quiz-title">Quiz · M06 — 5 questions</p>
+            <div class="q" data-answer="c">
+              <p class="q-text">1. Why "full jitter" on retry backoff?</p>
+              <label><input type="radio" name="m06q1" value="a"> It makes retries slower overall</label>
+              <label><input type="radio" name="m06q1" value="b"> It reduces the number of retries</label>
+              <label><input type="radio" name="m06q1" value="c"> It desynchronizes clients so retry batches don't re-spike the dependency</label>
+              <label><input type="radio" name="m06q1" value="d"> It's required by HTTP</label>
+              <div class="q-exp" hidden>Fixed backoff syncs every client's retries to the same +1s/+2s/+4s marks — new spikes. sleep = random(0, min(cap, base × 2^attempt)) spreads them flat under capacity.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">2. Your service allows 3 s end-to-end. A downstream sets a 5 s timeout. That timeout is…</p>
+              <label><input type="radio" name="m06q2" value="a"> Conservative and fine</label>
+              <label><input type="radio" name="m06q2" value="b"> Functionally infinite — the client has already left; the slot hangs for nothing</label>
+              <label><input type="radio" name="m06q2" value="c"> Exactly right with 2 s of slack</label>
+              <label><input type="radio" name="m06q2" value="d"> Fine if the network is fast</label>
+              <div class="q-exp" hidden>Timeouts are budgets, not suggestions: downstream must be strictly shorter than the upstream's remaining budget, or the upstream's pool drains serving clients who are gone.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">3. In HALF-OPEN state, a circuit breaker…</p>
+              <label><input type="radio" name="m06q3" value="a"> Sends all traffic through</label>
+              <label><input type="radio" name="m06q3" value="b"> Drops everything permanently</label>
+              <label><input type="radio" name="m06q3" value="c"> Doubles the timeout</label>
+              <label><input type="radio" name="m06q3" value="d"> Probes one request at a time — success closes the breaker, failure reopens it</label>
+              <div class="q-exp" hidden>The probe sequence lets a recovering dependency prove itself without exposing the full load: one success closes; one failure re-opens for another cooldown.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">4. A payment charge is retried after a lost response, with no idempotency key. The risk:</p>
+              <label><input type="radio" name="m06q4" value="a"> Double charge — the first request may have succeeded after all</label>
+              <label><input type="radio" name="m06q4" value="b"> No risk; the retry is free</label>
+              <label><input type="radio" name="m06q4" value="c"> The retry is faster</label>
+              <label><input type="radio" name="m06q4" value="d"> Only latency</label>
+              <div class="q-exp" hidden>At-least-once delivery means redelivery is normal. State-changing operations need an idempotency key per logical attempt so the second attempt is recognized as a replay, not a new charge.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. A bulkhead protects the system by…</p>
+              <label><input type="radio" name="m06q5" value="a"> Sharing one large connection pool across all dependencies</label>
+              <label><input type="radio" name="m06q5" value="b"> Giving each downstream its own pool so one hang can't starve the others</label>
+              <label><input type="radio" name="m06q5" value="c"> Retrying faster</label>
+              <label><input type="radio" name="m06q5" value="d"> Adding a CDN</label>
+              <div class="q-exp" hidden>POOL.PAY 50, POOL.PROF 8: when the profile service hangs, it exhausts only its own 8 slots. One shared pool lets a single slow dependency take the whole app down.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
           </div>
         </div>
 
@@ -559,6 +949,62 @@
             <p><span class="lbl">Lab</span>Build a mini message queue with at-least-once delivery, consumer retries, and an idempotent consumer. Redeliver on purpose; nothing may be lost or double-applied.</p>
             <p><span class="lbl">Design doc</span><em>"Monolith or microservices for a 12-engineer startup shipping a marketplace? Write the decision memo both ways."</em></p>
           </div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p><strong>A queue absorbs spikes, not permanent overload.</strong> Producers spike 200K/s against a DB that sustains 50K/s: depth grows during the spike and drains after — that's the win. Sustained overload just fills the disk. Alert when <em>depth &gt; workers × processing_time × 2</em>, scale workers with depth, and watch the drain rate, not just the depth. Poison pills get bounded retries (3 × 5/10/15 s backoff), then a dead-letter queue carrying the original error — and a named owner watching it. The silent-ack cautionary tale: a catch block that acked failed messages "to avoid loops" quietly dropped ~9,000 messages over six months with every dashboard green. The rule that catches it: end-to-end reconciliation (received vs processed) as first-class observability, and no silent catch blocks in review.</p>
+            <p><strong>Kafka vs RabbitMQ is log vs queue.</strong> Kafka: distributed commit log — offsets, native replay, per-partition ordering, consumer groups, a 3–5 broker cluster even with KRaft. RabbitMQ: a queue — ack deletes, competing consumers, single node is fine. Under ~5K msg/s the choice doesn't differentiate; replay needs a log; a low-throughput task queue doesn't want Kafka (the loss case: 500 emails/min on a 3-broker Kafka cluster — ~10× the cost of RabbitMQ, 6 engineer-months to learn that).</p>
+            <p><strong>The durability dial is per topic:</strong> acks=0 (~1 ms, telemetry), acks=1 (~3–5 ms, user events), acks=all (~10–20 ms, billing/audit); RF=3 with min ISR=2 survives one broker failure. Partition by the key that needs ordering; hot partitions (the top 0.1% of tenants) get sub-key partitioning — trading strict ordering for throughput. <em>The configuration is the design.</em> Delivery: at-least-once is the default, so consumers must be idempotent (dedup table, upsert, conditional writes) and commit after processing; exactly-once is expensive and only cheap Kafka-to-Kafka.</p>
+            <p><strong>Monolith vs microservices is an org decision</strong> (Conway's law: service topology follows team topology). 1–10 engineers → monolith; 10–25 → modular monolith or 2–4 services; 25–60 → microservices where boundaries match teams. Extract for a <em>stable bounded context</em> with independent scale, deploy, or ownership needs — "we might need to scale someday" is a hope, not a condition. The database is the boundary: a shared database means a distributed monolith — every cost of microservices, none of the independence.</p>
+            <p><strong>Sync vs async:</strong> go async when the user doesn't wait on the result, the dependency eats more than half the latency budget, failure shouldn't propagate, or the third party's tail is variable — and make every async command idempotent. <em>Synchronous chains are how distributed systems get slow; asynchronous chains are how they stay debuggable.</em> Coordination closes the part: discovery = registry + health checks (client-side picks, server-side hides); leader election = leases with TTL and majority terms (Raft intuition); the half-dead leader is exactly why leases expire and fencing tokens exist.</p>
+          </div>
+          <div class="quiz" id="quiz-m07">
+            <p class="quiz-title">Quiz · M07 — 5 questions</p>
+            <div class="q" data-answer="b">
+              <p class="q-text">1. Kafka acks setting for billing/audit events?</p>
+              <label><input type="radio" name="m07q1" value="a"> acks=0 — fastest</label>
+              <label><input type="radio" name="m07q1" value="b"> acks=all — full in-sync-replica acknowledgment (~10–20 ms)</label>
+              <label><input type="radio" name="m07q1" value="c"> acks=1 — leader ack is enough</label>
+              <label><input type="radio" name="m07q1" value="d"> No acks; consumers retry</label>
+              <div class="q-exp" hidden>The dial is per topic: 0 for telemetry (~1 ms), 1 for user events (~3–5 ms), all for anything you cannot afford to lose. "The configuration is the design."</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. A reasonable queue-depth alert fires when depth exceeds…</p>
+              <label><input type="radio" name="m07q2" value="a"> workers × processing_time × 2</label>
+              <label><input type="radio" name="m07q2" value="b"> exactly 100 messages</label>
+              <label><input type="radio" name="m07q2" value="c"> the broker count</label>
+              <label><input type="radio" name="m07q2" value="d"> Never — depth is normal</label>
+              <div class="q-exp" hidden>Depth beyond ~2 work-cycles means the spike has outrun the drain rate — that's the line between "absorbing a spike" and "filling the disk."</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">3. A message consistently crashes the consumer (a poison pill). Correct handling:</p>
+              <label><input type="radio" name="m07q3" value="a"> Ack it to keep the queue moving</label>
+              <label><input type="radio" name="m07q3" value="b"> Retry forever</label>
+              <label><input type="radio" name="m07q3" value="c"> Bounded retries with backoff, then a dead-letter queue carrying the original error — monitored by a named owner</label>
+              <label><input type="radio" name="m07q3" value="d"> Restart the consumer</label>
+              <div class="q-exp" hidden>Acking silently is how 9,000 messages vanish over six months with green dashboards. Forever-retrying blocks the partition. Bounded retries + DLQ + reconciliation is the pattern.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">4. A 12-engineer startup is building a marketplace. The default architecture:</p>
+              <label><input type="radio" name="m07q4" value="a"> 12 microservices — one per engineer</label>
+              <label><input type="radio" name="m07q4" value="b"> A modular monolith with rigorous internal module boundaries</label>
+              <label><input type="radio" name="m07q4" value="c"> Multi-region active-active</label>
+              <label><input type="radio" name="m07q4" value="d"> A service mesh</label>
+              <div class="q-exp" hidden>Below ~25 engineers, microservices is almost always a mistake. The modular monolith — one deployment, strict module lines, in-process calls — keeps the extraction door open for when team topology actually demands it.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">5. Kafka's ordering guarantee holds…</p>
+              <label><input type="radio" name="m07q5" value="a"> Globally across the topic</label>
+              <label><input type="radio" name="m07q5" value="b"> Per consumer group</label>
+              <label><input type="radio" name="m07q5" value="c"> Per cluster</label>
+              <label><input type="radio" name="m07q5" value="d"> Per partition — so partition by the key that needs ordering</label>
+              <div class="q-exp" hidden>Order exists only within a partition. Global order requires a single partition, which kills parallelism — so the partition key choice <em>is</em> the ordering design.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <!-- PART V -->
@@ -577,6 +1023,59 @@
             </div>
           </div>
           <div class="prose"><p><strong>Goal.</strong> See every concept from Parts I–IV surviving contact with production. The full catalog is in section 04. Per case: a 20-minute skim, redraw the architecture from memory, then write exactly two lines — <em>one decision you'd copy, one trade-off you'd question</em>.</p></div>
+          <p class="lesson-kicker">Lesson</p>
+          <div class="prose">
+            <p>The case lab is the exam, and the ritual is the answer sheet. Skim for 20 minutes with one question in mind — <em>which concept from Parts I–IV is this team surviving?</em> — close the write-up and redraw the architecture from memory. Then two lines, no more: the decision you'd copy, and the trade-off you'd question. Reading without redrawing is tourism.</p>
+            <p>Each theme trains a specific muscle: Real-Time &amp; Messaging teaches data modeling and delivery guarantees under extreme scale; Storage &amp; Data Infrastructure teaches purpose-built stores; Edge &amp; Global Scale teaches caching and partitioning economics; Payments teaches idempotency, reconciliation, and the outbox; Migrations teach that architecture is a process, not a diagram; Event-Driven teaches absorption and backpressure; Platform teaches the gateway/discovery layer; Consumer apps teach the request path under celebrity-scale skew.</p>
+          </div>
+          <div class="quiz" id="quiz-m08">
+            <p class="quiz-title">Quiz · M08 — 5 questions</p>
+            <div class="q" data-answer="c">
+              <p class="q-text">1. Discord indexing a trillion messages is, at its core, a lesson in…</p>
+              <label><input type="radio" name="m08q1" value="a"> Frontend performance</label>
+              <label><input type="radio" name="m08q1" value="b"> Organizational design</label>
+              <label><input type="radio" name="m08q1" value="c"> Data modeling and storage/index choice at extreme scale</label>
+              <label><input type="radio" name="m08q1" value="d"> Rate limiting</label>
+              <div class="q-exp" hidden>Trillion-message indexing is a storage-engine story: what the data looks like, how it's queried, and which store's write path matches — M03's access-pattern rule at its largest.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">2. Twilio's exactly-once delivery write-up most directly drills which module's material?</p>
+              <label><input type="radio" name="m08q2" value="a"> M05 caching</label>
+              <label><input type="radio" name="m08q2" value="b"> M06 — idempotency and delivery semantics as a contract</label>
+              <label><input type="radio" name="m08q2" value="c"> M01 estimation</label>
+              <label><input type="radio" name="m08q2" value="d"> M02 CDN</label>
+              <div class="q-exp" hidden>Exactly-once is the contract you implement with idempotency keys and dedup — M06's core claim that it's implemented, never inherited.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">3. Stripe's database migration platform is the production proof of…</p>
+              <label><input type="radio" name="m08q3" value="a"> Queue backpressure</label>
+              <label><input type="radio" name="m08q3" value="b"> Leader election</label>
+              <label><input type="radio" name="m08q3" value="c"> Cache invalidation</label>
+              <label><input type="radio" name="m08q3" value="d"> Zero-downtime migration — dual writes, backfill, cutover windows</label>
+              <div class="q-exp" hidden>Moving a live payments database is the dual-write/backfill/cutover playbook — the same mechanics you meet in M04's outbox and M03's resharding, at Stripe's stakes.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">4. Razorpay's "reliable dual writes" is the case-study twin of which pattern?</p>
+              <label><input type="radio" name="m08q4" value="a"> The outbox / saga-style consistency between state and events</label>
+              <label><input type="radio" name="m08q4" value="b"> Cursor pagination</label>
+              <label><input type="radio" name="m08q4" value="c"> Token-bucket rate limiting</label>
+              <label><input type="radio" name="m08q4" value="d"> Consistent hashing</label>
+              <div class="q-exp" hidden>Dual writes diverge unless made atomic — Razorpay's fix is the outbox family: one local transaction, a relay, reconciliation. M04's lab exists precisely to break this on purpose.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. Pinterest's cache infrastructure scaling is best read as a masterclass in…</p>
+              <label><input type="radio" name="m08q5" value="a"> ADR writing</label>
+              <label><input type="radio" name="m08q5" value="b"> Layered caching economics — hit ratio as the SLO</label>
+              <label><input type="radio" name="m08q5" value="c"> OAuth flows</label>
+              <label><input type="radio" name="m08q5" value="d"> Leader election</label>
+              <div class="q-exp" hidden>Pinterest is M05 at production scale: layers compounding, hot-key handling, and hit ratio treated as the reliability target rather than a nice-to-have.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <div class="module" id="m09">
@@ -608,6 +1107,58 @@
             <p><span class="lbl">Drills</span><em>Interviews Vol IV</em> (ten chapters = ten drills) · <em>Interview Cheatsheet</em> (framework, mistakes, four worked patterns: feed fan-out hybrid, URL shortener, chat, search) · <em>Survival Kit</em> (the opening + round checklist) · <em>45-Minute Map</em> · <em>Visual Atlas</em> §01 (the interview, drawn).</p>
             <p><span class="lbl">Capstone</span>Choose one, via <em>Build Your Own X</em>: a Raft-based KV store with leader election · a message queue with delivery guarantees · a load balancer · a rate limiter · a URL shortener with a full design doc and cache/CDN layering. Defend every major capstone decision with the four-part sentence.</p>
             <p><span class="lbl">Prep</span>Work through <em>Tech Interview Handbook</em> and <em>Coding Interview University</em> in parallel from Week 8 — not Week 12.</p>
+          </div>
+          <p class="lesson-kicker">Lesson — how to drill it</p>
+          <div class="prose">
+            <p>Record two 45-minute mocks per week from Week 10 and grade yourself against the runbook table above, not against "did it feel good." The three drills that move the needle: (1) <em>the opening</em> — run the four moves against five different prompts until the 90 seconds are reflex; (2) <em>the trade-off sentence</em> — for every major decision in your capstone, write the four parts out loud; (3) <em>the self-critique</em> — end every mock by naming your own bottleneck before the "interviewer" does. Use the Vol IV chapters as drill sets: one chapter per mock, one failure pattern to explicitly avoid. The interviewer is a colleague running a calibration exercise — they want you to pass; the structure is how you let them.</p>
+          </div>
+          <div class="quiz" id="quiz-m09">
+            <p class="quiz-title">Quiz · M09 — 5 questions</p>
+            <div class="q" data-answer="b">
+              <p class="q-text">1. Minutes 0–5 of the design round are for…</p>
+              <label><input type="radio" name="m09q1" value="a"> Drawing the high-level architecture</label>
+              <label><input type="radio" name="m09q1" value="b"> Scope — the 90-second opening: reframe, three questions (scale / axis / scope), sequence, invitation. No marker.</label>
+              <label><input type="radio" name="m09q1" value="c"> Capacity estimation</label>
+              <label><input type="radio" name="m09q1" value="d"> Picking the database</label>
+              <div class="q-exp" hidden>"Slow at the start is fast overall." The opening is a contract: it converts a vague prompt into a solvable problem and earns the right to draw.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">2. The "magic" scoping question is…</p>
+              <label><input type="radio" name="m09q2" value="a"> "Which database should I use?"</label>
+              <label><input type="radio" name="m09q2" value="b"> "How many servers do I get?"</label>
+              <label><input type="radio" name="m09q2" value="c"> "What's explicitly out of scope?"</label>
+              <label><input type="radio" name="m09q2" value="d"> "Can I use Redis?"</label>
+              <div class="q-exp" hidden>The scope question cuts the problem in half and shows senior judgment: knowing what you're NOT solving is the first act of design.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">3. The four-part trade-off sentence is:</p>
+              <label><input type="radio" name="m09q3" value="a"> "[Choice] because [reason], not [alternative] because [its cost], accepting [this choice's cost]"</label>
+              <label><input type="radio" name="m09q3" value="b"> "We use the best tool for the job"</label>
+              <label><input type="radio" name="m09q3" value="c"> "Kafka, because it scales"</label>
+              <label><input type="radio" name="m09q3" value="d"> "It depends on the requirements"</label>
+              <div class="q-exp" hidden>Naming the technology is not the bar — naming why you chose it and what you gave up is. An answer that names its constraint and alternative has pre-answered the pushback.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">4. Asked "how does this handle 100× scale?", the senior answer names…</p>
+              <label><input type="radio" name="m09q4" value="a"> More servers behind the load balancer</label>
+              <label><input type="radio" name="m09q4" value="b"> A bigger cache</label>
+              <label><input type="radio" name="m09q4" value="c"> Faster databases</label>
+              <label><input type="radio" name="m09q4" value="d"> Qualitative shifts: geographic distribution, multi-layer caching, async everywhere, distributed data — and coordination becoming the bottleneck</label>
+              <div class="q-exp" hidden>"Scale is not a bigger version of the same thing. It is a qualitatively different set of problems." At 1× the bottleneck is compute; at 100× it's coordination.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. The interviewer pushes back on a choice you believe is right. Best practice:</p>
+              <label><input type="radio" name="m09q5" value="a"> Defend every point to the end</label>
+              <label><input type="radio" name="m09q5" value="b"> Reset or pivot without drama; keep the board; defend ~1 in 10 pushbacks, anchored to a specific constraint</label>
+              <label><input type="radio" name="m09q5" value="c"> Fold immediately on everything</label>
+              <label><input type="radio" name="m09q5" value="d"> Restart the design from scratch</label>
+              <div class="q-exp" hidden>"You're right to push on that — let me redo it" is a reset, not a defeat. The moment is a collaboration test: they grade adaptability, not the revised architecture.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
           </div>
         </div>
 
@@ -652,6 +1203,66 @@
             <p><span class="lbl">Field reading</span><em>Production Incident Field Card</em> · <em>The 02:43 Outage</em> · <em>Code Review Playbook</em> · <em>Decision Map</em> D1–D6 + D12–D15 (rollback default rule, OOMKilled causes, load average ≠ CPU, the AI-inference-in-production trap) · <em>Staff Engineers Architecture Playbook</em> Part IV.</p>
             <p><span class="lbl">Design doc</span><em>"Make the fraud-check pattern impossible: what changes at the code, review, and runtime layers?"</em></p>
           </div>
+          <p class="lesson-kicker">Lesson — the diagnostic technique</p>
+          <div class="prose">
+            <p>The reusable core of the 02:43 story is a two-query check. Query one: on <span class="mono-cell">pg_stat_activity</span>, compare <em>max_held_seconds vs max_query_seconds</em> — when held ≫ query, connections are parked, not working: the pool-exhaustion signature. Query two: look at the longest-held connections' <em>wait_event_type</em> — <span class="mono-cell">Client</span> means the database is waiting for the <em>application</em> to send work (app-side hold); IO or Lock means a genuine database problem. Then trace the last SQL back to the transaction's entry-point method and search it for the five culprits: synchronous external HTTP, synchronous messaging publish, file/S3 I/O, explicit sleeps, and remote-cache misses inside the transaction. Six months of incident archaeology compresses into those two queries — the first one you ask <em>is</em> the expertise.</p>
+          </div>
+          <div class="quiz" id="quiz-m10">
+            <p class="quiz-title">Quiz · M10 — 6 questions</p>
+            <div class="q" data-answer="c">
+              <p class="q-text">1. The first-ten-minutes investigation order:</p>
+              <label><input type="radio" name="m10q1" value="a"> Mitigate → Restart → Root-cause → Document</label>
+              <label><input type="radio" name="m10q1" value="b"> Fix → Verify → Classify → Confirm</label>
+              <label><input type="radio" name="m10q1" value="c"> Classify → Confirm → Narrow → Mitigate → Verify</label>
+              <label><input type="radio" name="m10q1" value="d"> Read code → Run EXPLAIN → Roll back → Page someone</label>
+              <div class="q-exp" hidden>Blast radius before cause; a live request before a dashboard; cut the search space in half per check; one reversible change at a time; verify against the original symptom.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">2. Signature: every endpoint slow, the database dashboard idle. First check?</p>
+              <label><input type="radio" name="m10q2" value="a"> Connection-pool utilization and acquire-wait time — not query speed</label>
+              <label><input type="radio" name="m10q2" value="b"> CPU on the app servers</label>
+              <label><input type="radio" name="m10q2" value="c"> The database's slow-query log</label>
+              <label><input type="radio" name="m10q2" value="d"> DNS</label>
+              <div class="q-exp" hidden>Everything slow + DB idle = requests queued on connections that are never returned. It's not a capacity problem — find what's holding the connections (usually an external call inside a transaction).</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">3. In the 02:43 outage, the pool was saturated because…</p>
+              <label><input type="radio" name="m10q3" value="a"> A query lost its index</label>
+              <label><input type="radio" name="m10q3" value="b"> Traffic spiked 31×</label>
+              <label><input type="radio" name="m10q3" value="c"> The pool was configured too small</label>
+              <label><input type="radio" name="m10q3" value="d"> A synchronous fraud-API HTTP call ran inside the DB transaction — connections sat "idle in transaction" for ~8 s doing ~55 ms of DB work</label>
+              <div class="q-exp" hidden>Transaction duration equals the duration of the slowest synchronous thing inside it. Raising the pool size would have bought ninety seconds — then the bigger pool would have exhausted the same way.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">4. The third-party payment API starts returning 503s. First move?</p>
+              <label><input type="radio" name="m10q4" value="a"> Retry harder with more threads</label>
+              <label><input type="radio" name="m10q4" value="b"> Stop retrying, open the circuit breaker, serve the fallback, notify</label>
+              <label><input type="radio" name="m10q4" value="c"> Add capacity</label>
+              <label><input type="radio" name="m10q4" value="d"> Wait 30 minutes, then retry</label>
+              <div class="q-exp" hidden>"The first 90 seconds of a third-party outage decide whether the next two hours are calm or chaotic." Retries amplify load on both sides; degradation beats amplification.</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">5. Errors spiked 28 minutes after a clean deploy. The rollback default applies unless…</p>
+              <label><input type="radio" name="m10q5" value="a"> The deploy was reviewed</label>
+              <label><input type="radio" name="m10q5" value="b"> It's Friday</label>
+              <label><input type="radio" name="m10q5" value="c"> All three hold: the hotfix is readable end-to-end in &lt;60 s, locally testable in &lt;5 min, and the cause is unambiguous with metric/log proof</label>
+              <label><input type="radio" name="m10q5" value="d"> The on-call wrote a hotfix already</label>
+              <div class="q-exp" hidden>"The rollback is the safe answer. The hotfix is the heroic answer. Heroes ship two bugs." Rolling forward under pressure produces a second bug ~4 times in 10.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">6. Postmortem action items:</p>
+              <label><input type="radio" name="m10q6" value="a"> Max 3, each with a named owner and a date — the rest go in "noticed but did not commit to fixing"</label>
+              <label><input type="radio" name="m10q6" value="b"> Twelve, to show thoroughness</label>
+              <label><input type="radio" name="m10q6" value="c"> None — blameless means no changes</label>
+              <label><input type="radio" name="m10q6" value="d"> Only for Sev-1 incidents</label>
+              <div class="q-exp" hidden>Twelve action items guarantees none happen. Blameless means the timeline names actions, not actors — and the corpus gets reviewed quarterly for the recurring category.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
+          </div>
         </div>
 
         <div class="module" id="m11">
@@ -687,6 +1298,66 @@
             <p><span class="lbl">Labs</span>Run three decision-matrix drills aloud (pick any three rows above) · rewrite two of your own project stories through the scope ladder and phrase swaps · run the capstone defense: every major decision answered with the four questions plus the trade-off sentence.</p>
             <p><span class="lbl">Field reading</span><em>Backend Architecture Decision Playbook</em> (all 8 decisions) · <em>Senior Backend Decision Map</em> (20 junior/senior defaults) · <em>Staff Engineers Architecture Playbook</em> Parts I–III · <em>Staff Engineer Communication Playbook</em> · <em>Staff Engineer Interview Playbook</em> · <em>What The $250K Engineer Knows</em> · <em>Decision Cards</em> · <em>Senior Backend Field Cards</em>.</p>
             <p><span class="lbl">Design doc</span><em>"The decision record of your capstone: one ADR per major choice, each with the alternative you rejected and the cost you accepted."</em></p>
+          </div>
+          <p class="lesson-kicker">Lesson — the readiness self-check</p>
+          <div class="prose">
+            <p>Before the senior conversation, answer honestly: Have you influenced a decision on a team you don't sit on? Has something you built been adopted outside your team without you selling it? Do you have a detailed story of being <em>wrong</em> about a technical bet? Can you state an actual number for your last project's business value? Have you mentored someone whose judgment measurably changed? The readiness signal isn't more code — it's the radius of your decisions, made legible: scope ladder (team → org → company), the trade-off sentence, quantified impact, and a story bank of 5–7 real stories mapped to the questions they answer.</p>
+          </div>
+          <div class="quiz" id="quiz-m11">
+            <p class="quiz-title">Quiz · M11 — 6 questions</p>
+            <div class="q" data-answer="a">
+              <p class="q-text">1. The first of the four questions before any architecture decision:</p>
+              <label><input type="radio" name="m11q1" value="a"> Is this reversible?</label>
+              <label><input type="radio" name="m11q1" value="b"> What will it cost per month?</label>
+              <label><input type="radio" name="m11q1" value="c"> Which framework is popular?</label>
+              <label><input type="radio" name="m11q1" value="d"> What did the last company do?</label>
+              <div class="q-exp" hidden>Reversibility first: it sets how much deliberation everything else deserves. Then blast radius, cost of not deciding, and second-order effects.</div>
+            </div>
+            <div class="q" data-answer="d">
+              <p class="q-text">2. Which of these is a one-way door?</p>
+              <label><input type="radio" name="m11q2" value="a"> Retry/timeout policy</label>
+              <label><input type="radio" name="m11q2" value="b"> Cache TTL</label>
+              <label><input type="radio" name="m11q2" value="c"> A feature flag</label>
+              <label><input type="radio" name="m11q2" value="d"> An event schema (add-only, already in Kafka)</label>
+              <div class="q-exp" hidden>Event schemas are add-only once consumers exist; the multi-tenancy model, sharding key, and public API contracts live in the same category. Retry policy and TTLs are two-way doors.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">3. Which cost dimension is real, compounding, and almost never on the decision slide?</p>
+              <label><input type="radio" name="m11q3" value="a"> Infrastructure spend</label>
+              <label><input type="radio" name="m11q3" value="b"> Cognitive load</label>
+              <label><input type="radio" name="m11q3" value="c"> Compute</label>
+              <label><input type="radio" name="m11q3" value="d"> Storage</label>
+              <div class="q-exp" hidden>One service is fine; twenty justified ones later, the mental model is 3× harder — the quiet force behind the modular-monolith resurgence. Next: opportunity cost (the feature project that didn't happen).</div>
+            </div>
+            <div class="q" data-answer="c">
+              <p class="q-text">4. The single highest-leverage sentence in a staff-level discussion:</p>
+              <label><input type="radio" name="m11q4" value="a"> "We used the industry-standard tool."</label>
+              <label><input type="radio" name="m11q4" value="b"> "It went well overall."</label>
+              <label><input type="radio" name="m11q4" value="c"> "We considered [X], and chose not to, because [constraint] mattered more than [what X would have given us]."</label>
+              <label><input type="radio" name="m11q4" value="d"> "I escalated it to my manager."</label>
+              <div class="q-exp" hidden>The trade-off sentence proves judgment happened. And "I escalated" as a first move is the clearest senior-level reflex — escalation is a documented last resort, taken with data.</div>
+            </div>
+            <div class="q" data-answer="b">
+              <p class="q-text">5. "Three teams adopted the caching pattern without my involvement; it became the service template." On the scope ladder, that's…</p>
+              <label><input type="radio" name="m11q5" value="a"> Team rung</label>
+              <label><input type="radio" name="m11q5" value="b"> Org rung — the first real staff signal</label>
+              <label><input type="radio" name="m11q5" value="c"> Company rung</label>
+              <label><input type="radio" name="m11q5" value="d"> Not a signal</label>
+              <div class="q-exp" hidden>Team = optimized your service; org = multiple teams adopted your way; company = the default platform that changes org-level numbers. Don't invent the detail — find it; it's usually already true.</div>
+            </div>
+            <div class="q" data-answer="a">
+              <p class="q-text">6. An offer lands. The correct first move:</p>
+              <label><input type="radio" name="m11q6" value="a"> Thank them, show excitement, ask for time to review — never accept on the call</label>
+              <label><input type="radio" name="m11q6" value="b"> Accept immediately — the relief is the goal</label>
+              <label><input type="radio" name="m11q6" value="c"> Demand 50% more on the spot</label>
+              <label><input type="radio" name="m11q6" value="d"> Ghost until the deadline</label>
+              <div class="q-exp" hidden>"The relief is the expensive emotion." Level is the biggest lever — negotiate it before the number; the real money moves in equity and sign-on; competing offers in writing are the whole game.</div>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-check" type="button">Check answers</button>
+            <button class="quiz-reset" type="button">Reset</button>
+            <span class="quiz-score" aria-live="polite"></span>
           </div>
         </div>
       </section>
@@ -925,10 +1596,65 @@
         </details>
       </section>
 
-      <p class="colophon">Backend System Design — a structured course. Compiled September 2026 from a curated list of 10 learning libraries, 23 canonical system-design concepts, 35 production architecture write-ups, and a 17-volume field document library (ProdRescue volumes by Devrim Özcay). Single-file HTML, self-contained, opens anywhere.</p>
+      <p class="colophon">Backend System Design — a structured course. Compiled September 2026 from a curated list of 10 learning libraries, 23 canonical system-design concepts, 35 production architecture write-ups, and a 17-volume field document library (ProdRescue volumes by Devrim Özcay). Interactive edition: eleven lessons with quizzes — 57 questions, graded in the browser. Single-file HTML, self-contained, opens anywhere; quiz scores are session-only by design.</p>
 
     </div>
   </main>
 </div>
+</body>
+<script>
+(function () {
+  var quizzes = Array.prototype.slice.call(document.querySelectorAll('.quiz'));
+  var prog = document.getElementById('quiz-progress');
+  var done = 0;
+  function refresh() { if (prog) { prog.textContent = done + ' / ' + quizzes.length + ' quizzes checked'; } }
+  quizzes.forEach(function (quiz) {
+    var qs = Array.prototype.slice.call(quiz.querySelectorAll('.q'));
+    var btn = quiz.querySelector('.quiz-check');
+    var rst = quiz.querySelector('.quiz-reset');
+    var score = quiz.querySelector('.quiz-score');
+    if (!btn || !rst || !score) { return; }
+    btn.addEventListener('click', function () {
+      var right = 0, answered = 0;
+      qs.forEach(function (item) {
+        var ans = item.getAttribute('data-answer');
+        var sel = item.querySelector('input:checked');
+        var labels = Array.prototype.slice.call(item.querySelectorAll('label'));
+        labels.forEach(function (l) { l.classList.remove('opt-right', 'opt-wrong'); });
+        var correctLabel = item.querySelector('label input[value="' + ans + '"]');
+        if (correctLabel) { correctLabel.closest('label').classList.add('opt-right'); }
+        item.classList.remove('is-right', 'is-wrong', 'is-missed');
+        if (sel) {
+          answered++;
+          if (sel.value === ans) { right++; item.classList.add('is-right'); }
+          else { sel.closest('label').classList.add('opt-wrong'); item.classList.add('is-wrong'); }
+        } else {
+          item.classList.add('is-missed');
+        }
+        var exp = item.querySelector('.q-exp');
+        if (exp) { exp.hidden = false; }
+      });
+      if (!quiz.getAttribute('data-counted')) { done++; quiz.setAttribute('data-counted', '1'); }
+      score.textContent = right + ' / ' + qs.length + ' correct' + (answered < qs.length ? ' · ' + (qs.length - answered) + ' unanswered' : '');
+      btn.textContent = 'Re-check answers';
+      refresh();
+    });
+    rst.addEventListener('click', function () {
+      qs.forEach(function (item) {
+        item.classList.remove('is-right', 'is-wrong', 'is-missed');
+        Array.prototype.slice.call(item.querySelectorAll('input')).forEach(function (i) { i.checked = false; });
+        Array.prototype.slice.call(item.querySelectorAll('label')).forEach(function (l) { l.classList.remove('opt-right', 'opt-wrong'); });
+        var exp = item.querySelector('.q-exp');
+        if (exp) { exp.hidden = true; }
+      });
+      if (quiz.getAttribute('data-counted')) { done--; quiz.removeAttribute('data-counted'); }
+      score.textContent = '';
+      btn.textContent = 'Check answers';
+      refresh();
+    });
+  });
+  refresh();
+})();
+</script>
 </body>
 </html>

@@ -8,8 +8,8 @@
 
 | File | What it is |
 |---|---|
-| `index.html` | The full course handbook (GitHub Pages site) |
-| `course.md` | The same course in Markdown, for editing/reuse |
+| `index.html` | The full interactive course — detailed lessons per module + 57-question quiz engine (GitHub Pages site) |
+| `course.md` | The syllabus/outline in Markdown (module map, labs, reading lists) — the lesson content and quizzes live in `index.html` |
 
 ## Course map
 
